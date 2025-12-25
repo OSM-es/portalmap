@@ -123,7 +123,7 @@ Portal Map is a comprehensive web-based OpenStreetMap viewer featuring advanced 
   - MapTiler Vector Tiles with custom styling
   - Esri, IGN, ICGC for satellite/aerial imagery
 - **APIs**: Mapillary, Nominatim, Overpass, Taginfo
-- **Translations**: Custom dynamic translation system with 12 language support
+- **Translations**: Custom dynamic translation system with 11 language support
 - **Styling**: Responsive CSS with mobile-first approach
 - **Performance**: Efficient vector tile rendering, bbox query strategy, lazy loading
 
@@ -322,7 +322,7 @@ Portal Map es un visor web integral de OpenStreetMap con capacidades avanzadas d
   - Teselas vectoriales MapTiler con estilos personalizados
   - Esri, IGN, ICGC para imágenes satelitales/aéreas
 - **APIs**: Mapillary, Nominatim, Overpass, Taginfo
-- **Traducciones**: Sistema de traducción dinámica personalizado con soporte para 12 idiomas
+- **Traducciones**: Sistema de traducción dinámica personalizado con soporte para 11 idiomas
 - **Estilos**: CSS responsive con enfoque mobile-first
 - **Rendimiento**: Renderizado eficiente de teselas vectoriales, estrategia de consulta bbox, carga diferida
 
@@ -521,7 +521,7 @@ Portal Map és un visor web integral d'OpenStreetMap amb capacitats avançades d
   - Teseles vectorials MapTiler amb estils personalitzats
   - Esri, IGN, ICGC per a imatges satel·litals/aèries
 - **APIs**: Mapillary, Nominatim, Overpass, Taginfo
-- **Traduccions**: Sistema de traducció dinàmica personalitzat amb suport per a 12 idiomes
+- **Traduccions**: Sistema de traducció dinàmica personalitzat amb suport per a 11 idiomes
 - **Estils**: CSS responsive amb enfocament mobile-first
 - **Rendiment**: Renderitzat eficient de teseles vectorials, estratègia de consulta bbox, càrrega diferida
 
