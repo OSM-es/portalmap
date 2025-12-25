@@ -1,5 +1,3 @@
-# OSM Utils
-
 Based on [https://github.com/yopaseopor/osmpoismap](https://github.com/yopaseopor/osmpoismap)
 
 # Portal Map 🗺️
@@ -165,7 +163,7 @@ Portal Map is a comprehensive web-based OpenStreetMap viewer featuring advanced 
 
 ## 🌐 Live Demo
 
-**Try Portal Map**: [https://yopaseopor.github.io/portalmap](https://yopaseopor.github.io/portalmap)
+**Try Portal Map**: [https://osm-es.github.io/portalmap](https://osm-es.github.io/portalmap)
 
 ## 📖 URL Parameters & API
 
@@ -194,7 +192,7 @@ Portal Map was primarily developed using the **vibe coding** technique, a creati
 #### Main Tools Used:
 - **Cursor** with models like Claude Sonnet 3.5 and ChatGPT 4.0
 - **Windsurf** with ChatGPT 4.1, Deepseek, Gemini 2.5, SWE-1, and code-supernova-1 million
-- **Visual Studio Code** with Copilot and ChatGPT 4.1
+- **Visual Studio Code** with Copilot and grok code fast-1 ChatGPT 4.1
 
 #### Development Scripts & Tools
 - **Taginfo Downloader**: Automated tag definition retrieval
@@ -364,7 +362,7 @@ Portal Map es un visor web integral de OpenStreetMap con capacidades avanzadas d
 
 ## 🌐 Demo en directo
 
-**Prueba Portal Map**: [https://yopaseopor.github.io/portalmap](https://yopaseopor.github.io/portalmap)
+**Prueba Portal Map**: [https://osm-es.github.io/portalmap](https://osm-es.github.io/portalmap)
 
 ## 📖 Parámetros URL y API
 
@@ -393,7 +391,7 @@ Portal Map ha sido desarrollado principalmente utilizando la técnica de **vibe 
 #### Principales herramientas utilizadas:
 - **Cursor** con modelos como Claude Sonnet 3.5 y ChatGPT 4.0
 - **Windsurf** con ChatGPT 4.1, Deepseek, Gemini 2.5, SWE-1 y code-supernova-1 million
-- **Visual Studio Code** con Copilot y ChatGPT 4.1
+- **Visual Studio Code** con Copilot y grok code fast-1 ChatGPT 4.1
 
 #### Scripts y herramientas de desarrollo
 - **Descargador Taginfo**: Recuperación automatizada de definiciones de etiquetas
@@ -563,7 +561,7 @@ Portal Map és un visor web integral d'OpenStreetMap amb capacitats avançades d
 
 ## 🌐 Demo en directe
 
-**Prova Portal Map**: [https://yopaseopor.github.io/portalmap](https://yopaseopor.github.io/portalmap)
+**Prova Portal Map**: [https://osm-es.github.io/portalmap](https://osm-es.github.io/portalmap)
 
 ## 📖 Paràmetres URL i API
 
@@ -592,7 +590,7 @@ Portal Map ha estat desenvolupat principalment utilitzant la tècnica de **vibe 
 #### Principals eines utilitzades:
 - **Cursor** amb models com Claude Sonnet 3.5 i ChatGPT 4.0
 - **Windsurf** amb ChatGPT 4.1, Deepseek, Gemini 2.5, SWE-1 i code-supernova-1 million
-- **Visual Studio Code** amb Copilot i ChatGPT 4.1
+- **Visual Studio Code** amb Copilot i grok code fast-1 ChatGPT 4.1
 
 #### Scripts i eines de desenvolupament
 - **Descarregador Taginfo**: Recuperació automatitzada de definicions d'etiquetes
