@@ -56,7 +56,7 @@ Portal Map is a comprehensive web-based OpenStreetMap viewer featuring advanced 
 - **Feature Statistics**: Overlay summary showing active layers and tagged element counts
 
 ### 🌍 Comprehensive Multilingual Support
-- **12 languages available**: English, Spanish, Catalan, French, Italian, German, Danish, Basque, Galician, Aragonese, Asturian
+- **11 languages available**: English, Spanish, Catalan, French, Italian, German, Danish, Basque, Galician, Aragonese, Asturian
 - **Dynamic translation system** with real-time language switching
 - **Localized tag suggestions** from Taginfo API for each language
 - **Interface adaptation** for each supported language
@@ -192,7 +192,7 @@ Portal Map was primarily developed using the **vibe coding** technique, a creati
 #### Main Tools Used:
 - **Cursor** with models like Claude Sonnet 3.5 and ChatGPT 4.0
 - **Windsurf** with ChatGPT 4.1, Deepseek, Gemini 2.5, SWE-1, and code-supernova-1 million
-- **Visual Studio Code** with Copilot and grok code fast-1 ChatGPT 4.1
+- **Visual Studio Code** with Copilot, grok code fast-1 and ChatGPT 4.1
 
 #### Development Scripts & Tools
 - **Taginfo Downloader**: Automated tag definition retrieval
@@ -255,7 +255,7 @@ Portal Map es un visor web integral de OpenStreetMap con capacidades avanzadas d
 - **Estadísticas de elementos**: Resumen de superposiciones mostrando capas activas y recuentos de elementos etiquetados
 
 ### 🌍 Soporte multilingüe integral
-- **12 idiomas disponibles**: Inglés, Español, Catalán, Francés, Italiano, Alemán, Danés, Vasco, Gallego, Aragonés, Asturiano
+- **11 idiomas disponibles**: Inglés, Español, Catalán, Francés, Italiano, Alemán, Danés, Vasco, Gallego, Aragonés, Asturiano
 - **Sistema de traducción dinámica** con cambio de idioma en tiempo real
 - **Sugerencias de etiquetas localizadas** desde la API Taginfo para cada idioma
 - **Adaptación de interfaz** para cada idioma soportado
@@ -391,7 +391,7 @@ Portal Map ha sido desarrollado principalmente utilizando la técnica de **vibe 
 #### Principales herramientas utilizadas:
 - **Cursor** con modelos como Claude Sonnet 3.5 y ChatGPT 4.0
 - **Windsurf** con ChatGPT 4.1, Deepseek, Gemini 2.5, SWE-1 y code-supernova-1 million
-- **Visual Studio Code** con Copilot y grok code fast-1 ChatGPT 4.1
+- **Visual Studio Code** con Copilot, grok code fast-1 y ChatGPT 4.1
 
 #### Scripts y herramientas de desarrollo
 - **Descargador Taginfo**: Recuperación automatizada de definiciones de etiquetas
@@ -454,7 +454,7 @@ Portal Map és un visor web integral d'OpenStreetMap amb capacitats avançades d
 - **Estadístiques d'elements**: Resum de superposicions mostrant capes actives i recomptes d'elements etiquetats
 
 ### 🌍 Suport multiidioma integral
-- **12 idiomes disponibles**: Anglès, Castellà, Català, Francès, Italià, Alemany, Danès, Basc, Gallec, Aragonès, Asturià
+- **11 idiomes disponibles**: Anglès, Castellà, Català, Francès, Italià, Alemany, Danès, Basc, Gallec, Aragonès, Asturià
 - **Sistema de traducció dinàmica** amb canvi d'idioma en temps real
 - **Suggeriments d'etiquetes localitzades** des de l'API Taginfo per a cada idioma
 - **Adaptació d'interfície** per a cada idioma suportat
@@ -590,7 +590,7 @@ Portal Map ha estat desenvolupat principalment utilitzant la tècnica de **vibe 
 #### Principals eines utilitzades:
 - **Cursor** amb models com Claude Sonnet 3.5 i ChatGPT 4.0
 - **Windsurf** amb ChatGPT 4.1, Deepseek, Gemini 2.5, SWE-1 i code-supernova-1 million
-- **Visual Studio Code** amb Copilot i grok code fast-1 ChatGPT 4.1
+- **Visual Studio Code** amb Copilot, grok code fast-1 i ChatGPT 4.1
 
 #### Scripts i eines de desenvolupament
 - **Descarregador Taginfo**: Recuperació automatitzada de definicions d'etiquetes
