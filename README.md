@@ -5,17 +5,17 @@ Based on [https://github.com/yopaseopor/osmpoismap](https://github.com/yopaseopo
 <details>
 <summary><h2>🌐 Languages / Idiomas / Idiomes</h2></summary>
 
-- [English](#english-version) 🇬🇧
-- [Español](#versión-en-español) 🇪🇸
-- [Català](#versió-en-català) 🇦🇩
-- [Français](#version-française) 🇫🇷
-- [Italiano](#versione-italiana) 🇮🇹
-- [Deutsch](#deutsche-version) 🇩🇪
-- [Dansk](#dansk-version) 🇩🇰
-- [Euskera](#euskera-bertsioa) 🇪🇺
-- [Galego](#versión-galega) 🇬🇦
-- [Aragonés](#versión-aragonesa) 🇦🇷
-- [Asturianu](#versión-asturiana) 🇦🇸
+- [English](#english-version) (EN)
+- [Español](#versión-en-español) (ES)
+- [Català](#versió-en-català) (CA)
+- [Français](#version-française) (FR)
+- [Italiano](#versione-italiana) (IT)
+- [Deutsch](#deutsche-version) (DE)
+- [Dansk](#dansk-version) (DA)
+- [Euskera](#euskera-bertsioa) (EU)
+- [Galego](#versión-galega) (GA)
+- [Aragonés](#versión-aragonesa) (AN)
+- [Asturlleonés](#versión-asturiana) (AST)
 
 </details>
 
