@@ -1,4 +1,4 @@
-Based on [https://github.com/yopaseopor/osmpoismap](https://github.com/yopaseopor/osmpoismap)
+Based on [https://github.com/yopaseopor/osmpoismap](https://github.com/yopaseopor/osmpoismap) and [https://github.com/yopaseopor/osmutils](https://github.com/yopaseopor/osmutils) 
 
 # Portal Map 🗺️
 
