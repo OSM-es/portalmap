@@ -96,7 +96,7 @@ var config = {
 	layers: [
 	new ol.layer.Tile({
 			title: 'OpenStreetMap',
-			iconSrc: imgSrc + 'osm_logo-layer.svg',
+			iconSrc: imgSrc + 'icones_web/osm_logo-layer.svg',
 			source: new ol.source.OSM()
 		}),
 				
@@ -171,6 +171,7 @@ var config = {
 			return layer;
 		})(),
 		
+
 								new ol.layer.Tile({
 /*@@ título */					title: 'OpenStreetMap DE',
 /*@@ icono */					iconSrc: imgSrc + 'icones_web/osmbw_logo-layer.png',
