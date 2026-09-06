@@ -181,13 +181,18 @@ function initKeySearch() {
                 bestDefinition = result.definition_es;
             }
 
+            // Check if we have actual count data (from full CSV) or just row counts (from simple CSV)
+            const hasCountData = result.keyData && result.keyData.values && 
+                                 Array.from(result.keyData.values.values()).some(entries => 
+                                     entries.length > 0 && entries[0].countAll > 0);
+            
             const resultElement = $('<div>')
                 .addClass('key-search-result')
                 .data('result', result)
                 .html(`
                     <div class="key-name">${escapeHtml(result.key)}</div>
                     <div class="key-definition">${escapeHtml(bestDefinition)}</div>
-                    <div class="key-count">${formatKeyCount(result.totalCount, bestDefinition)}</div>
+                    <div class="key-count">${formatKeyCount(result.totalCount, bestDefinition, hasCountData)}</div>
                 `);
 
             // Append value suggestions (if available in taginfoData)
@@ -273,9 +278,11 @@ function initKeySearch() {
         return num.toString();
     }
 
-    function formatKeyCount(count, definition) {
+    function formatKeyCount(count, definition, hasCountData = false) {
         if (count > 0) {
-            const formatted = `${formatNumber(count)} uses`;
+            const formatted = hasCountData 
+                ? `${formatNumber(count)} uses` 
+                : `${formatNumber(count)} values`;
             return formatted;
         } else {
             const shortDesc = definition ? definition.substring(0, 60) + (definition.length > 60 ? '...' : '') : `${window.getTranslation ? window.getTranslation('noDescriptionAvailable') : 'No description available'}`;
@@ -511,47 +518,35 @@ function initKeySearch() {
                                     };
 
                                     features.forEach(feature => {
-                                        // Get the feature type from the OSM XML properties
-                                        const properties = feature.getProperties();
-                                        const type = feature.get('type') || 
-                                                   (properties.tags && properties.tags.type) || 
-                                                   (properties.get && properties.get('tags') && properties.get('tags').type) ||
-                                                   (feature.getGeometry() ? feature.getGeometry().getType().toLowerCase() : 'unknown');
+                                        // Get the geometry type - this is the reliable way to determine element type
+                                        const geometry = feature.getGeometry();
+                                        const geomType = geometry ? geometry.getType() : 'unknown';
                                         
-                                        console.log('🔍 Feature type detected:', type, 'Feature ID:', feature.getId());
+                                        console.log('🔍 Feature geometry type:', geomType, 'Feature ID:', feature.getId());
                                         
-                                        if (type === 'node' || (feature.getGeometry() && feature.getGeometry().getType() === 'Point')) {
+                                        // Use geometry type to count elements (more reliable than tags)
+                                        if (geomType === 'Point' || geomType === 'MultiPoint') {
                                             elementCounts.node++;
-                                        } else if (type === 'way' || 
-                                                  (feature.getGeometry() && 
-                                                   (feature.getGeometry().getType() === 'LineString' || 
-                                                    feature.getGeometry().getType() === 'Polygon'))) {
+                                        } else if (geomType === 'LineString' || geomType === 'MultiLineString') {
                                             elementCounts.way++;
-                                            // Check if it's a polygon (closed way)
-                                            const geometry = feature.getGeometry();
-                                            if (geometry && geometry.getType() === 'Polygon') {
-                                                elementCounts.polygon++;
-                                            }
-                                        } else if (type === 'relation') {
-                                            elementCounts.relation++;
+                                        } else if (geomType === 'Polygon' || geomType === 'MultiPolygon') {
+                                            elementCounts.way++;
+                                            elementCounts.polygon++;
                                         } else {
-                                            // Fallback: Check geometry type if type property is not available
-                                            const geomType = feature.getGeometry() ? feature.getGeometry().getType().toLowerCase() : 'unknown';
-                                            if (geomType === 'point' || geomType === 'multipoint') {
+                                            // Try to get type from feature properties as fallback
+                                            const properties = feature.getProperties();
+                                            const featureType = feature.get('type') || 
+                                                               (properties.tags && properties.tags.type) || 
+                                                               (properties.get && properties.get('tags') && properties.get('tags').type);
+                                            
+                                            if (featureType === 'node') {
                                                 elementCounts.node++;
-                                            } else if (geomType === 'linestring' || geomType === 'multilinestring') {
+                                            } else if (featureType === 'way') {
                                                 elementCounts.way++;
-                                            } else if (geomType === 'polygon' || geomType === 'multipolygon') {
-                                                elementCounts.way++;
-                                                elementCounts.polygon++;
-                                            } else if (type === 'node') {
-                                                elementCounts.node++;
-                                            } else if (type === 'way') {
-                                                elementCounts.way++;
-                                            } else if (type === 'relation') {
+                                            } else if (featureType === 'relation') {
                                                 elementCounts.relation++;
                                             } else {
-                                                console.warn('⚠️ Unknown feature type:', type, feature);
+                                                console.warn('⚠️ Unknown feature type:', featureType, 'geometry:', geomType, 'feature:', feature);
                                             }
                                         }
                                     });

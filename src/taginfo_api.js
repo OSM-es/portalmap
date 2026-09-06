@@ -211,22 +211,31 @@ function parseCSVDataSimple(csvText, targetData = window.taginfoData) {
                     keyData.values.set(value, []);
                 }
 
+                // Try to parse count data if available (for CSVs with more columns)
+                let countAll = 0;
+                if (values.length >= 7 && values[6]) {
+                    // CSV has count data in column 6 (count_all)
+                    countAll = parseInt(values[6]) || 0;
+                }
+
                 // Create entry with language-specific definition
                 const entry = {
                     definition: definition,
-                    countAll: 0, // No count data in simplified CSV
+                    countAll: countAll,
                     [`definition_${lang}`]: definition
                 };
                 
                 keyData.values.get(value).push(entry);
-                keyData.totalCount += 1;
+                // Use actual count if available, otherwise count rows
+                keyData.totalCount += countAll > 0 ? countAll : 1;
                 lineCount++;
                 
                 // Track values globally
                 if (!targetData.values.has(value)) {
                     targetData.values.set(value, { totalCount: 0 });
                 }
-                targetData.values.get(value).totalCount += 1;
+                // Use actual count if available, otherwise count rows
+                targetData.values.get(value).totalCount += countAll > 0 ? countAll : 1;
 
                 // Store the tag for reverse lookup
                 const tag = `${key}=${value}`;
@@ -404,7 +413,8 @@ function searchKeys(query, limit = 20) {
                 definition_es: keyData.definition_es || '',
                 totalCount: keyData.totalCount,
                 type: 'key',
-                matchScore: matchScore
+                matchScore: matchScore,
+                keyData: keyData // Include keyData for count data verification
             });
 
             if (results.length >= limit) {
