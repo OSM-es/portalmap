@@ -260,6 +260,8 @@ function initKeySearch() {
         if (result.key) {
             currentKey = result.key; 
             searchInput.val(result.key);
+            // Trigger input event to update any listeners
+            searchInput.trigger('input');
             resultsContainer.empty().hide();
 
             const valueSearchInput = $('#value-search');
@@ -305,39 +307,69 @@ function initKeySearch() {
 
     // Handle execute button click for generic key queries
     $('#execute-key-query-btn').on('click', function() {
-        // Use currentKey if available, otherwise try to find from input
-        let keyToExecute = currentKey;
+        console.log('🔘 Execute button clicked. currentKey:', currentKey, 'input value:', searchInput.val());
         
-        // If no currentKey, try to find a matching key from the input field value
+        let keyToExecute = null;
+        let valueToExecute = null;
+        
+        // Priority 1: Use currentKey if it's set (from a previous selection or value click)
+        if (currentKey) {
+            // Parse currentKey to extract key and value if it contains '='
+            if (currentKey.includes('=')) {
+                const parts = currentKey.split('=');
+                keyToExecute = parts[0];
+                valueToExecute = parts[1] || '';
+            } else {
+                keyToExecute = currentKey;
+            }
+        }
+        
+        // Priority 2: Try to find a matching key from the input field value
         if (!keyToExecute) {
             const inputValue = searchInput.val().trim();
-            if (inputValue && window.taginfoData && window.taginfoData.keys && window.taginfoData.loaded) {
-                const normalizedInput = inputValue.toLowerCase();
-                try {
-                    for (const [key, keyData] of window.taginfoData.keys) {
-                        if (key.toLowerCase() === normalizedInput || 
-                            key.toLowerCase().startsWith(normalizedInput)) {
-                            keyToExecute = key;
-                            break;
+            if (inputValue) {
+                // Check if input contains '=' (key=value format)
+                if (inputValue.includes('=')) {
+                    const parts = inputValue.split('=');
+                    keyToExecute = parts[0];
+                    valueToExecute = parts[1] || '';
+                } else {
+                    // Try to find exact or partial match in taginfo data
+                    if (window.taginfoData && window.taginfoData.keys && window.taginfoData.loaded) {
+                        const normalizedInput = inputValue.toLowerCase();
+                        try {
+                            for (const [key, keyData] of window.taginfoData.keys) {
+                                if (key.toLowerCase() === normalizedInput || 
+                                    key.toLowerCase().startsWith(normalizedInput)) {
+                                    keyToExecute = key;
+                                    break;
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error searching for matching key:', e);
                         }
                     }
-                } catch (e) {
-                    console.error('Error searching for matching key:', e);
                 }
             }
         }
         
         if (keyToExecute) {
-            currentKey = keyToExecute;
+            // Update currentKey and input field to show the actual key being queried
+            currentKey = valueToExecute ? `${keyToExecute}=${valueToExecute}` : keyToExecute;
+            searchInput.val(currentKey);
+            
+            console.log('🚀 Executing query for key:', currentKey);
             
             const $btn = $(this);
             const executingText = window.getTranslation ? window.getTranslation('executingQuery') || 'Executing query...' : 'Executing query...';
             $btn.prop('disabled', true).text(executingText);
-            executeGenericKeyQuery(keyToExecute);
+            executeGenericKeyQuery(currentKey);
         } else {
-            console.error('🚫 No key to execute query for');
+            // If we can't find a key, show an error and keep the button enabled
+            console.error('🚫 No key to execute query for. Input:', searchInput.val());
             const $btn = $(this);
-            $btn.prop('disabled', false).text('No Key Selected');
+            $btn.prop('disabled', false).text('Select a Key First');
+            // Don't hide the button - let the user try again
         }
     });
 
@@ -349,6 +381,8 @@ function initKeySearch() {
         console.log('🔑 Value suggestion clicked:', key, value);
         currentKey = `${key}${value && value !== '*' ? '=' + value : (value === '*' ? '=*' : '')}`;
         $('#key-search').val(key + (value && value !== '*' ? '=' + value : (value === '*' ? '=*' : '')));
+        // Trigger input event to update any listeners
+        $('#key-search').trigger('input');
         showKeyExecuteButton(currentKey);
         const $btn = $('#execute-key-query-btn');
         const executingText = window.getTranslation ? window.getTranslation('executingQuery') || 'Executing query...' : 'Executing query...';
@@ -639,8 +673,10 @@ function initKeySearch() {
                                         }
                                         
                                         // Also call the update function for consistency
+                                        // Use the currentKey to ensure the statistics show the correct query
+                                        const statsQuery = currentKey || (value ? `${key}=${value}` : key);
                                         window.updateQueryStatistics({
-                                            query: value ? `${key}=${value}` : key,
+                                            query: statsQuery,
                                             dataSize: window.formatBytes(features.length * 100), // Approximate size
                                             executionTime: '0.000s',
                                             nodes: elementCounts.node,
@@ -650,6 +686,11 @@ function initKeySearch() {
                                             polygons: elementCounts.polygon,
                                             color: uniqueColor.slice(0, 3) // RGB values
                                         });
+                                        
+                                        // Also update the current-query element directly to ensure it shows the correct key
+                                        if ($('#current-query').length) {
+                                            $('#current-query').text(statsQuery);
+                                        }
                                         
                                         console.log('📊 Updated query statistics with:', {
                                             nodes: elementCounts.node,
