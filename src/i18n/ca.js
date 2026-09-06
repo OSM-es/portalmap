@@ -476,6 +476,7 @@ export const ca = {
     executeKeyQuery: 'Executar Consulta de Clau',
     reexecuteQuery: 'Tornar a executar Consulta',
     queryExecuted: 'Consulta Executada',
+    clickToRepeat: 'Fes clic per repetir',
     queryError: 'Error de Consulta',
     overpassServer: 'Servidor Overpass:',
     queryTimeoutLabel: 'Temps d\'espera:',

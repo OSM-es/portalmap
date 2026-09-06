@@ -306,71 +306,66 @@ function initKeySearch() {
     }
 
     // Handle execute button click for generic key queries
-    $('#execute-key-query-btn').on('click', function() {
-        console.log('🔘 Execute button clicked. currentKey:', currentKey, 'input value:', searchInput.val());
+    $('#execute-key-query-btn').on('click', function(e) {
+        // Always use the input field value as the source of truth
+        let keyToExecute = searchInput.val().trim();
         
-        let keyToExecute = null;
-        let valueToExecute = null;
-        
-        // Priority 1: Use currentKey if it's set (from a previous selection or value click)
-        if (currentKey) {
-            // Parse currentKey to extract key and value if it contains '='
-            if (currentKey.includes('=')) {
-                const parts = currentKey.split('=');
-                keyToExecute = parts[0];
-                valueToExecute = parts[1] || '';
-            } else {
-                keyToExecute = currentKey;
-            }
-        }
-        
-        // Priority 2: Try to find a matching key from the input field value
         if (!keyToExecute) {
-            const inputValue = searchInput.val().trim();
-            if (inputValue) {
-                // Check if input contains '=' (key=value format)
-                if (inputValue.includes('=')) {
-                    const parts = inputValue.split('=');
-                    keyToExecute = parts[0];
-                    valueToExecute = parts[1] || '';
-                } else {
-                    // Try to find exact or partial match in taginfo data
-                    if (window.taginfoData && window.taginfoData.keys && window.taginfoData.loaded) {
-                        const normalizedInput = inputValue.toLowerCase();
-                        try {
-                            for (const [key, keyData] of window.taginfoData.keys) {
-                                if (key.toLowerCase() === normalizedInput || 
-                                    key.toLowerCase().startsWith(normalizedInput)) {
-                                    keyToExecute = key;
-                                    break;
-                                }
-                            }
-                        } catch (e) {
-                            console.error('Error searching for matching key:', e);
-                        }
-                    }
-                }
-            }
+            // If input is empty, try currentKey as fallback
+            keyToExecute = currentKey;
         }
         
-        if (keyToExecute) {
-            // Update currentKey and input field to show the actual key being queried
-            currentKey = valueToExecute ? `${keyToExecute}=${valueToExecute}` : keyToExecute;
-            searchInput.val(currentKey);
-            
-            console.log('🚀 Executing query for key:', currentKey);
-            
-            const $btn = $(this);
-            const executingText = window.getTranslation ? window.getTranslation('executingQuery') || 'Executing query...' : 'Executing query...';
-            $btn.prop('disabled', true).text(executingText);
-            executeGenericKeyQuery(currentKey);
-        } else {
-            // If we can't find a key, show an error and keep the button enabled
-            console.error('🚫 No key to execute query for. Input:', searchInput.val());
-            const $btn = $(this);
-            $btn.prop('disabled', false).text('Select a Key First');
-            // Don't hide the button - let the user try again
+        if (!keyToExecute) {
+            console.error('🚫 No key to execute query for');
+            $(this).prop('disabled', false).text('Enter a Key');
+            return;
         }
+        
+        console.log('🔘 Execute button clicked! Executing:', keyToExecute);
+        
+        // Parse key=value format if present
+        let valueToExecute = null;
+        if (keyToExecute.includes('=')) {
+            const parts = keyToExecute.split('=');
+            keyToExecute = parts[0];
+            valueToExecute = parts[1] || '';
+        }
+        
+        // Update currentKey to match what we're executing
+        currentKey = valueToExecute ? `${keyToExecute}=${valueToExecute}` : keyToExecute;
+        
+        console.log('🔘 Final key to execute:', currentKey);
+        
+        const $btn = $(this);
+        const executingText = window.getTranslation ? window.getTranslation('executingQuery') || 'Executing query...' : 'Executing query...';
+        $btn.prop('disabled', true).text(executingText);
+        executeGenericKeyQuery(currentKey);
+    });
+        
+        if (!keyToExecute) {
+            console.error('🚫 No key to execute query for');
+            $(this).prop('disabled', false).text('Select a Key First');
+            return;
+        }
+        
+        // Parse key=value format if present
+        let valueToExecute = null;
+        if (keyToExecute.includes('=')) {
+            const parts = keyToExecute.split('=');
+            keyToExecute = parts[0];
+            valueToExecute = parts[1] || '';
+        }
+        
+        // Update currentKey and input field to show the actual key being queried
+        currentKey = valueToExecute ? `${keyToExecute}=${valueToExecute}` : keyToExecute;
+        searchInput.val(currentKey);
+        
+        console.log('🚀 Executing query for key:', currentKey);
+        
+        const $btn = $(this);
+        const executingText = window.getTranslation ? window.getTranslation('executingQuery') || 'Executing query...' : 'Executing query...';
+        $btn.prop('disabled', true).text(executingText);
+        executeGenericKeyQuery(currentKey);
     });
 
     // Handle clicks on value suggestion buttons inside results
@@ -713,7 +708,7 @@ function initKeySearch() {
                                     // Trigger the overlay features loaded event
                                     window.dispatchEvent(new CustomEvent('overlayFeaturesLoaded'));
 
-                                    $('#execute-key-query-btn').prop('disabled', false).text(`${window.getTranslation ? window.getTranslation('queryExecuted') : 'Query Executed'}`);
+                                    $('#execute-key-query-btn').prop('disabled', false).text(`${window.getTranslation ? window.getTranslation('queryExecuted') : 'Query Executed'}: ${currentKey} - ${window.getTranslation ? window.getTranslation('clickToRepeat') : 'Click to Repeat'}`);
                                     $('#clear-key-search-btn').show();
 
                                     // Force a map render update to ensure visibility
@@ -782,21 +777,29 @@ function initKeySearch() {
         // Add the layer to the group - the group already has layers array in constructor
         const layersCollection = overlaysGroup.getLayers();
 
-        // Check if this overlay already exists in the group
+        // Check if this overlay already exists in the group - if so, remove it first to allow re-execution
         const existingLayer = layersCollection.getArray().find(layer =>
             layer.get && layer.get('id') === overlayId
         );
 
         if (existingLayer) {
-            console.log('🔍 Overlay already exists in group, allowing re-execution');
-            // Update button to allow re-execution
-            const $btn = $('#execute-key-query-btn');
-            const reexecuteText = window.getTranslation ? window.getTranslation('reexecuteQuery') || 'Re-execute Query' : 'Re-execute Query';
-            $btn.prop('disabled', false).text(reexecuteText);
-            // Don't update count here - it will be updated when features are loaded
-            return;
+            console.log('🔍 Overlay already exists, removing old overlay to allow RE-EXECUTION');
+            // Remove the old layer
+            layersCollection.remove(existingLayer);
+            // Also remove from map if it's there
+            if (window.map && existingLayer.getSource) {
+                try {
+                    const source = existingLayer.getSource();
+                    if (source && source.clear) {
+                        source.clear();
+                    }
+                } catch (e) {
+                    console.error('Error clearing old source:', e);
+                }
+            }
         }
 
+        // Add the new layer to the group
         layersCollection.push(vectorLayer);
         console.log('🔍 Vector layer added to group, total layers:', layersCollection.getLength());
 
@@ -855,8 +858,8 @@ function initKeySearch() {
         // Also trigger a more specific event for the overlay system
         window.dispatchEvent(new CustomEvent('overlayFeaturesLoaded'));
 
-        // Reset button state
-        $('#execute-key-query-btn').prop('disabled', false).text('Query Executed');
+        // Reset button state - show the key that was queried so user can re-execute
+        $('#execute-key-query-btn').prop('disabled', false).text(`${window.getTranslation ? window.getTranslation('queryExecuted') : 'Query Executed'}: ${currentKey} - ${window.getTranslation ? window.getTranslation('clickToRepeat') : 'Click to Repeat'}`);
         $('#clear-key-search-btn').show();
 
         // Force a map render update to ensure visibility
