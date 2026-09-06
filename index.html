@@ -29,6 +29,26 @@
 		<div id="menu" class="menu">
 			<!-- Language Selector -->
 			<div id="language-selector-container" class="language-selector-wrapper"></div>
+			<!-- Overpass Server Selector -->
+			<div class="overpass-server-selector" style="margin: 5px 0; font-size: 11px;">
+			  <label data-i18n="overpassServer">Overpass Server:</label>
+			  <select id="overpass-server-select" style="margin-left: 5px; padding: 2px 5px;">
+			    <option value="0">overpass-api.de</option>
+			    <option value="1">overpass.kumi.systems</option>
+			    <option value="2">overpass.nchc.org.tw</option>
+			    <option value="3">z.overpass-api.de</option>
+			  </select>
+			</div>
+			<!-- Timeout Selector -->
+			<div class="timeout-selector" style="margin: 5px 0; font-size: 11px;">
+			  <label data-i18n="queryTimeoutLabel">Query Timeout:</label>
+			  <select id="timeout-select" style="margin-left: 5px; padding: 2px 5px;">
+			    <option value="60">60 sec</option>
+			    <option value="120">120 sec</option>
+			    <option value="180">180 sec</option>
+			    <option value="240">240 sec</option>
+			  </select>
+			</div>
 			<!-- Key Searcher -->
 			<div id="key-search-container" style="margin: 10px 0; position: relative;">
 			  <input type="text" id="key-search" placeholder="Search OSM keys..." data-i18n="searchOsmKeys" style="width: 100%; padding: 5px;">

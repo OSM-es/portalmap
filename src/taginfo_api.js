@@ -856,8 +856,9 @@ function getTagDefinition(tag) {
  * @param {string|null} value - The OSM value to search for (optional for generic key search)
  * @param {Array<number>} bbox - The bounding box [minLon, minLat, maxLon, maxLat]
  * @param {Array<string>} elementTypes - Array of element types to search ['node', 'way', 'relation']
+ * @param {number} timeout - Query timeout in seconds (default: 60 for generic, 35 for specific)
  */
-function generateOverpassQuery(key, value = null, bbox, elementTypes = ['node', 'way', 'relation']) {
+function generateOverpassQuery(key, value = null, bbox, elementTypes = ['node', 'way', 'relation'], timeout = null) {
     // console.log('🔧 generateOverpassQuery called with:');
     // console.log('🔧 key:', JSON.stringify(key), 'value:', JSON.stringify(value));
     // console.log('🔧 key length:', key ? key.length : 'null', 'value length:', value ? value.length : 'null');
@@ -920,8 +921,10 @@ function generateOverpassQuery(key, value = null, bbox, elementTypes = ['node', 
             queryParts.push(`  node(w)`); // Get nodes of those ways - these will be marked as polygon nodes
         }
 
-        const query = `[out:xml][timeout:35];\n(\n${queryParts.join(';\n')};\n);\nout meta;`;
-        console.log('🔧 Generated multi-element query:', query);
+        // Use provided timeout or default to 35 for specific queries
+        const queryTimeout = timeout || 35;
+        const query = `[out:xml][timeout:${queryTimeout}];\n(\n${queryParts.join(';\n')};\n);\nout meta;`;
+        console.log('🔧 Generated multi-element query with timeout:', queryTimeout);
         return query;
     } else {
         // Generic key query (all values for this key) - include all selected element types
@@ -945,7 +948,9 @@ function generateOverpassQuery(key, value = null, bbox, elementTypes = ['node', 
             queryParts.push(`  node(w)`); // Get nodes of those ways - these will be marked as polygon nodes
         }
 
-        const query = `[out:xml][timeout:60];\n(\n${queryParts.join(';\n')};\n);\nout meta;`;
+        // Use provided timeout or default to 60 for generic queries
+        const queryTimeout = timeout || 60;
+        const query = `[out:xml][timeout:${queryTimeout}];\n(\n${queryParts.join(';\n')};\n);\nout meta;`;
         console.log('🔧 Generated multi-element generic query:', query);
         return query;
     }

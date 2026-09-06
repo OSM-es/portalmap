@@ -434,9 +434,13 @@ function initKeySearch() {
         const elementTypes = ['node', 'way', 'relation']; // For generic key queries, search all types
         console.log('🚀 Element types:', elementTypes);
 
+        // Get timeout from config (user-selected value)
+        const timeout = config.overpassTimeout ? config.overpassTimeout() : (value ? 35 : 60);
+        console.log('🚀 Query timeout:', timeout, 'seconds');
+
     // Generate query: if value is null => generic key query, else key=value
-    const query = window.generateOverpassQuery(key, value, bbox, elementTypes);
-        console.log('🚀 Generated generic key query:', query);
+    const query = window.generateOverpassQuery(key, value, bbox, elementTypes, timeout);
+        console.log('🚀 Generated generic key query with timeout:', query);
 
         // Check if query generation failed
         if (!query) {
@@ -487,7 +491,9 @@ function initKeySearch() {
                     const client = new XMLHttpRequest();
                     client.open('POST', config.overpassApi());
                     client.setRequestHeader('Content-Type', 'text/plain;charset=UTF-8');
-                    client.timeout = 15000; // 15 second timeout for retries
+                    // Use the selected timeout from config (convert seconds to milliseconds)
+                    const requestTimeout = (config.overpassTimeout ? config.overpassTimeout() : 60) * 1000;
+                    client.timeout = requestTimeout;
                     console.log('🎯 Sending request to:', config.overpassApi());
                     console.log('🎯 Request data:', queryData);
 
@@ -920,6 +926,40 @@ function formatNumber(num) {
 $(document).ready(function() {
     // console.log('🔑 DOM ready, initializing key search');
     initKeySearch();
+    
+    // Initialize Overpass server selector
+    const serverSelect = $('#overpass-server-select');
+    if (serverSelect.length) {
+        // Set the current server from localStorage
+        const currentServerIndex = localStorage.getItem('overpassServerIndex') || '0';
+        serverSelect.val(currentServerIndex);
+        
+        // Handle server change
+        serverSelect.on('change', function() {
+            const selectedIndex = $(this).val();
+            if (config.setOverpassServer) {
+                config.setOverpassServer(selectedIndex);
+            }
+            console.log('🌐 Overpass server changed to:', selectedIndex);
+        });
+    }
+    
+    // Initialize timeout selector
+    const timeoutSelect = $('#timeout-select');
+    if (timeoutSelect.length) {
+        // Set the current timeout from localStorage
+        const currentTimeout = localStorage.getItem('overpassTimeout') || '60';
+        timeoutSelect.val(currentTimeout);
+        
+        // Handle timeout change
+        timeoutSelect.on('change', function() {
+            const selectedTimeout = $(this).val();
+            if (config.setOverpassTimeout) {
+                config.setOverpassTimeout(selectedTimeout);
+            }
+            console.log('⏱️ Query timeout changed to:', selectedTimeout, 'seconds');
+        });
+    }
 });
 
 // Export for use in other modules

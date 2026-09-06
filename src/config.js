@@ -72,8 +72,12 @@ var config = {
 			'https://z.overpass-api.de/api/interpreter'
 		];
 		
-		// Try to get a working server from localStorage or use the first one
+		// Try to get selected server from localStorage or use the first one
 		var currentServerIndex = parseInt(localStorage.getItem('overpassServerIndex') || '0');
+		// Ensure index is within bounds
+		if (isNaN(currentServerIndex) || currentServerIndex < 0 || currentServerIndex >= overpassServers.length) {
+			currentServerIndex = 0;
+		}
 		return overpassServers[currentServerIndex];
 	},
 	overpassApiFallback: function() {
@@ -91,6 +95,27 @@ var config = {
 		
 		console.log('Switching to Overpass server:', overpassServers[nextIndex]);
 		return overpassServers[nextIndex];
+	},
+	
+	// Get the selected timeout in seconds
+	overpassTimeout: function() {
+		var timeout = parseInt(localStorage.getItem('overpassTimeout') || '60');
+		if (isNaN(timeout) || timeout < 60) {
+			timeout = 60;
+		}
+		return timeout;
+	},
+	
+	// Set the Overpass server index
+	setOverpassServer: function(index) {
+		localStorage.setItem('overpassServerIndex', index.toString());
+		console.log('Overpass server set to:', index);
+	},
+	
+	// Set the query timeout
+	setOverpassTimeout: function(seconds) {
+		localStorage.setItem('overpassTimeout', seconds.toString());
+		console.log('Overpass timeout set to:', seconds, 'seconds');
 	},
 	//@@ Mapas de fondo
 	layers: [

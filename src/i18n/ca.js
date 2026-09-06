@@ -477,6 +477,8 @@ export const ca = {
     reexecuteQuery: 'Tornar a executar Consulta',
     queryExecuted: 'Consulta Executada',
     queryError: 'Error de Consulta',
+    overpassServer: 'Servidor Overpass:',
+    queryTimeoutLabel: 'Temps d\'espera:',
     parseError: 'Error d\'Anàlisi',
     requestFailed: 'Petició Fallida',
     uses: 'usos',

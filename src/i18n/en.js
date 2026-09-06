@@ -327,6 +327,8 @@ export const en = {
     executeKeyQuery: 'Execute Key Query',
     reexecuteQuery: 'Re-execute Query',
     queryExecuted: 'Query Executed',
+    overpassServer: 'Overpass Server:',
+    queryTimeoutLabel: 'Query Timeout:',
     queryError: 'Query Error',
     parseError: 'Parse Error',
     requestFailed: 'Request Failed',
