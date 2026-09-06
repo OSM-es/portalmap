@@ -127,23 +127,10 @@ function initKeySearch() {
                         console.error('🔑 No result data found on highlighted key element');
                     }
                 } else {
-                    // No highlighted result - try to execute with the input value
-                    const inputValue = searchInput.val().trim();
-                    if (inputValue) {
-                        // Try to find a matching key
-                        const normalizedInput = inputValue.toLowerCase();
-                        for (const [key, keyData] of window.taginfoData.keys) {
-                            if (key.toLowerCase() === normalizedInput || 
-                                key.toLowerCase().startsWith(normalizedInput)) {
-                                const $btn = $('#execute-key-query-btn');
-                                if ($btn.length) {
-                                    const executingText = window.getTranslation ? window.getTranslation('executingQuery') || 'Executing query...' : 'Executing query...';
-                                    $btn.prop('disabled', true).text(executingText);
-                                    executeGenericKeyQuery(key);
-                                }
-                                break;
-                            }
-                        }
+                    // No highlighted result - trigger the execute button click
+                    const $btn = $('#execute-key-query-btn');
+                    if ($btn.length && !$btn.prop('disabled')) {
+                        $btn.click();
                     }
                 }
                 break;
@@ -318,41 +305,29 @@ function initKeySearch() {
 
     // Handle execute button click for generic key queries
     $('#execute-key-query-btn').on('click', function() {
-        let keyToExecute = null;
+        // Use currentKey if available, otherwise try to find from input
+        let keyToExecute = currentKey;
         
-        // Priority 1: Use the highlighted result if available
-        const highlighted = resultsContainer.find('.highlighted');
-        if (highlighted.length) {
-            const highlightedResult = highlighted.data('result');
-            if (highlightedResult && highlightedResult.key) {
-                keyToExecute = highlightedResult.key;
-            }
-        }
-        
-        // Priority 2: Use currentKey if it's set (from a previous selection)
-        if (!keyToExecute && currentKey) {
-            keyToExecute = currentKey;
-        }
-        
-        // Priority 3: Try to find a matching key from the input field value
+        // If no currentKey, try to find a matching key from the input field value
         if (!keyToExecute) {
             const inputValue = searchInput.val().trim();
-            if (inputValue) {
-                // Check if the input matches a key exactly or partially
+            if (inputValue && window.taginfoData && window.taginfoData.keys && window.taginfoData.loaded) {
                 const normalizedInput = inputValue.toLowerCase();
-                for (const [key, keyData] of window.taginfoData.keys) {
-                    if (key.toLowerCase() === normalizedInput || 
-                        key.toLowerCase().startsWith(normalizedInput)) {
-                        keyToExecute = key;
-                        break;
+                try {
+                    for (const [key, keyData] of window.taginfoData.keys) {
+                        if (key.toLowerCase() === normalizedInput || 
+                            key.toLowerCase().startsWith(normalizedInput)) {
+                            keyToExecute = key;
+                            break;
+                        }
                     }
+                } catch (e) {
+                    console.error('Error searching for matching key:', e);
                 }
             }
         }
         
         if (keyToExecute) {
-            // Update the input field to show the actual key being queried
-            searchInput.val(keyToExecute);
             currentKey = keyToExecute;
             
             const $btn = $(this);
