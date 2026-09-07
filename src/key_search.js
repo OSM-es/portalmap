@@ -381,6 +381,24 @@ function initKeySearch() {
         $(this).hide();
 
         console.log('✅ Key search cleared');
+
+        // Clear tag parameters from URL and return to basic URL
+        if (window.clearTagQueryFromUrl) {
+            window.clearTagQueryFromUrl();
+        } else if (window.history && window.history.replaceState) {
+            // Fallback: remove query parameters and clean hash
+            const url = new URL(window.location.href);
+            url.search = ''; // Remove all query parameters
+            // Clean hash of tag parameters
+            if (url.hash) {
+                const hashParts = url.hash.split('&').filter(part => {
+                    return part.startsWith('#map=') || (!part.startsWith('tag=') && !part.startsWith('tag.'));
+                });
+                url.hash = hashParts.join('&');
+            }
+            window.history.replaceState({}, '', url.toString());
+            console.log('🧹 URL cleared');
+        }
     });
 
     function showKeyExecuteButton(key) {
@@ -940,6 +958,26 @@ function formatNumber(num) {
     }
     return num.toString();
 }
+
+// Function to clear tag query from URL
+function clearTagQueryFromUrl() {
+    if (window.history && window.history.replaceState) {
+        const url = new URL(window.location.href);
+        url.search = ''; // Remove all query parameters
+        // Clean hash of tag parameters
+        if (url.hash) {
+            const hashParts = url.hash.split('&').filter(part => {
+                return part.startsWith('#map=') || (!part.startsWith('tag=') && !part.startsWith('tag.'));
+            });
+            url.hash = hashParts.join('&');
+        }
+        window.history.replaceState({}, '', url.toString());
+        console.log('🧹 URL cleared of tag parameters');
+    }
+}
+
+// Export for use in other modules
+window.clearTagQueryFromUrl = clearTagQueryFromUrl;
 
 // Initialize when DOM is ready
 $(document).ready(function() {
