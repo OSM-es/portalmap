@@ -388,6 +388,7 @@ payment:visa,yes,pago:visado	=	sí
 passenger_information_display,no,pantalla_de_información_del_pasajero	=	no
 passenger_information_display,yes,pantalla_de_información_del_pasajero	=	sí
 recycling:paper,yes,papel reciclado	=	sí
+recycling:clothes,yes,Reciclaje ropa (Roba amiga)
 parcel_mail_in,yes,paquete_correo_en	=	sí
 wall,no,pared	=	no
 wall,yes,pared	=	sí
@@ -709,3 +710,4 @@ tourist_bus,no,autobús_turístico=no
 traffic_signals:countdown,yes,señales_de_tráiler:cuenta_atrás=sí
 trailblazed,no,señalizado=no
 trolley_wire,no,cableado_para_tranvías=no
+recycling:clothes,yes,Reciclaje ropa (Roba amiga)

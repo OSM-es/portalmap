@@ -1517,9 +1517,23 @@ function initValueSearch() {
             console.error('🧹 Error calling clearMapLayers:', error);
         }
 
+        // Clear tag parameters from URL (same as key search clear button)
+        if (window.clearTagQueryFromUrl) {
+            window.clearTagQueryFromUrl();
+        } else if (window.history && window.history.replaceState) {
+            const url = new URL(window.location.href);
+            url.search = '';
+            if (url.hash) {
+                const hashParts = url.hash.split('&').filter(part => {
+                    return part.startsWith('#map=') || (!part.startsWith('tag=') && !part.startsWith('tag.'));
+                });
+                url.hash = hashParts.join('&');
+            }
+            window.history.replaceState({}, '', url.toString());
+            console.log('🧹 URL cleared');
+        }
+
         console.log('🧹 Clear button cleanup completed');
-        // Add visual feedback
-        alert('Clear completed - check console for details');
     });
 
     searchInput.on('keydown', function(e) {

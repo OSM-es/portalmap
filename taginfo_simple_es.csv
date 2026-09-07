@@ -5368,7 +5368,8 @@ recreation_ground,showground,terreno de recreo	=	recinto ferial
 recycling_type,*,tipo de reciclaje	=	*
 recycling_type,centre,tipo_de_reciclaje	=	centro
 recycling_type,container,tipo_de_reciclaje	=	envase
-recycling:glass,no,reciclaje:vidrio	=	no
+recycling:glass,,
+recycling:clothes,,reciclaje:ropa (Roba amiga)  = Activar sí/no
 recycling:plastic,no,separado:plástico=ningún
 rednap:grupo,0,rednap:grupo	=	*
 rednap:nodo,no,rednap: nodo	=	no
