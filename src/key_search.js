@@ -331,31 +331,6 @@ function initKeySearch() {
             valueToExecute = parts[1] || '';
         }
         
-        // Update currentKey to match what we're executing
-        currentKey = valueToExecute ? `${keyToExecute}=${valueToExecute}` : keyToExecute;
-        
-        console.log('🔘 Final key to execute:', currentKey);
-        
-        const $btn = $(this);
-        const executingText = window.getTranslation ? window.getTranslation('executingQuery') || 'Executing query...' : 'Executing query...';
-        $btn.prop('disabled', true).text(executingText);
-        executeGenericKeyQuery(currentKey);
-    });
-        
-        if (!keyToExecute) {
-            console.error('🚫 No key to execute query for');
-            $(this).prop('disabled', false).text('Select a Key First');
-            return;
-        }
-        
-        // Parse key=value format if present
-        let valueToExecute = null;
-        if (keyToExecute.includes('=')) {
-            const parts = keyToExecute.split('=');
-            keyToExecute = parts[0];
-            valueToExecute = parts[1] || '';
-        }
-        
         // Update currentKey and input field to show the actual key being queried
         currentKey = valueToExecute ? `${keyToExecute}=${valueToExecute}` : keyToExecute;
         searchInput.val(currentKey);
