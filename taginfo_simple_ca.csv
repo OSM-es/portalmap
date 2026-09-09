@@ -4922,242 +4922,242 @@ political_division,NL:statenkieskring,divisió política	=	ES:statenkieskring
 zone:traffic,NL:urban,zona:tràfic	=	ÉS:urbà
 source:maxspeed,NL:zone30,font:velocitat màxima NL:zone30
 source:location,NLS.fi Topographic Database,font:ubicació Base de dades topogràfica NLS.fi
-road_marking,,marcació_carretera no Activar sí/no
-access,,accés = no  Activar sí/no
-internet_access,,accés a Internet = no  Activar sí/no
-access:roof,,accés: sostre = no  Activar sí/no
-access:delivery,,accés:lliurament = no  Activar sí/no
-managed,,administrat = no  Activar sí/no
-agricultural,,agrícola = no  Activar sí/no
-drinking_water,,aigua potable = no  Activar sí/no
-segregated,,aïllat = no  Activar sí/no
-highspeed,,alta velocitat = no  Activar sí/no
-oneway:bus,,anada: autobús = no  Activar sí/no
-oneway:bicycle,,anada: bicicleta = no  Activar sí/no
-oneway:motorcycle,,anada: motocicleta = no  Activar sí/no
-animated,,animat = no  Activar sí/no
-area,,àrea = no  Activar sí/no
-car,,auto = no  Activar sí/no
-bus,,autobús = no  Activar sí/no
-motorcar,,automòbil = no  Activar sí/no
-expressway,,Autopista = no  Activar sí/no
-highway,,autopista = no  Activar sí/no
-self_service,,autoservei = no  Activar sí/no
-dual_carriageway,,autovia = no  Activar sí/no
-overtaking,,avançament = no  Activar sí/no
-toilets,,banys = no  Activar sí/no
-toilets:handwashing,,banys: rentat de mans = no   Activar sí/no
-barrier,,barrera = no   Activar sí/no
-goods,,béns = no   Activar sí/no
-bicycle,,bicicleta = no   Activar sí/no
-mtb,,bicicleta de muntanya = no   Activar sí/no
-lockable,,bloquejable = no   Activar sí/no
-locked,,bloquejat = no   Activar sí/no
-pump,,bomba = no   Activar sí/no
-shop,,botiga = no   Activar sí/no
-button_operated,,botó_operat = no   Activar sí/no
-wheelchair,,cadira de rodes = no   Activar sí/no
-atm,,Caixer automàtic = no   Activar sí/no
-traffic_calming,,calmar el trànsit = no   Activar sí/no
-gutter,,canal = no   Activar sí/no
-change:backward,,canvi: al revés = no   Activar sí/no
-change:forward,,canvi: endavant = no   Activar sí/no
-change:lanes:forward,,canviar: carrils: endavant = no   Activar sí/no
-change:lanes:backward,,canviar:carrils:darrere = no   Activar sí/no
-capacity:disabled,,capacitat: deshabilitat = no   Activar sí/no
-capacity:parent,,capacitat: pare = no   Activar sí/no
-capacity:women,,capacitat:dones = no   Activar sí/no
-motorroad,,carretera = no   Activar sí/no
-cycleway,,carril bici = no   Activar sí/no
-cycleway:right,,carril bici: dreta = no   Activar sí/no
-cycleway:foot,,carril bici: peu = no   Activar sí/no
-cycleway:both,,carril bici:tots dos = no   Activar sí/no
-carriage,,carro = no   Activar sí/no
-horse,,cavall = no   Activar sí/no
-moped,,ciclomotor = no   Activar sí/no
-cycleway:right:buffer,,ciclovia:dreta:amortidor = no   Activar sí/no
-cycleway:right:oneway,,ciclovia:dreta:sentit únic = no   Activar sí/no
-cycleway:left,,ciclovia:esquerra = no   Activar sí/no
-covered,,cobert = no   Activar sí/no
-bin,,compartiment = no   Activar sí/no
-crop,,cultiu = no   Activar sí/no
-oneway,,d'una sola mà = no   Activar sí/no
-smoking,,de fumar = no   Activar sí/no
-tidal,,de marea = no   Activar sí/no
-dispensing,,dispensant = no   Activar sí/no
-building:fireproof,,edifici: incombustible = no   Activar sí/no
-electrified,,electrificat = no   Activar sí/no
-ship,,Embarcació = no   Activar sí/no
-emergency,,emergència = no   Activar sí/no
-crossing,,encreuament = no   Activar sí/no
-crossing:island,,encreuament: illa = no   Activar sí/no
-crossing:light,,encreuament: llum = no   Activar sí/no
-crossing:barrier,,encreuament:barrera = no   Activar sí/no
-crossing:bell,,encreuament:campana = no   Activar sí/no
-entrance,,entrada = no   Activar sí/no
-delivery,,entrega = no   Activar sí/no
-school:selective,,escola: selectiva = no   Activar sí/no
-shoulder,,espatlla = no   Activar sí/no
-ski,,esquí = no   Activar sí/no
-seasonal,,estacional = no   Activar sí/no
-parking,,estacionament = no   Activar sí/no
-parking:right,,estacionament: dret = no   Activar sí/no
-parking:left,,estacionament: esquerra = no   Activar sí/no
-parking:lane:both,,estacionament:carril:tots dos = no   Activar sí/no
-parking:both,,estacionament:tots dos = no   Activar sí/no
-flour_fortified,,farina_fortificada = no   Activar sí/no
-railway:milestone:catenary_mast,,ferrocarril: fita: catenary_mast = no   Activar sí/no
-railway:milestone:emergency_brake_override,,ferrocarril: fita: emergency_brake_override = no   Activar sí/no
-railway:lzb,,ferrocarril: lzb = no   Activar sí/no
-railway:ballastless,,ferrocarril: sense balast = no   Activar sí/no
-railway:atb,,ferrocarril:atb = no   Activar sí/no
-railway:etcs,,ferrocarril:etc. = no   Activar sí/no
-railway:gnt,,ferrocarril:gnt = no   Activar sí/no
-railway:switch:electric,,ferrocarril:interruptor:elèctric = no   Activar sí/no
-railway:ls,,ferrocarril:ls = no   Activar sí/no
-railway:local_operated,,ferrocarril:operat_localment = no   Activar sí/no
-railway:pzb,,ferrocarril:pzb = no   Activar sí/no
-railway:tbl,,ferrocarril:tbl = no   Activar sí/no
-physically_present,,físicament present = no   Activar sí/no
-FMMP_modified,,FMMP_modificat = no   Activar sí/no
-FMMP_reviewed,,FMMP_revisat = no   Activar sí/no
-kerb,,frenar = no   Activar sí/no
-backup_generator,,generador_de_respatller = no   Activar sí/no
-dog,,gos = no   Activar sí/no
-historic,,històric = no   Activar sí/no
-opening_hours:signed,,horari_d'obertura:signat = no   Activar sí/no
-collection_times:signed,,horaris de recollida:signat = no   Activar sí/no
-lit,,il·luminat = no   Activar sí/no
-indoor,,interior = no   Activar sí/no
-intermittent,,intermitent = no   Activar sí/no
-internet_access:fee,,internet_access:tarifa = no   Activar sí/no
-irrigated,,irrigat = no   Activar sí/no
-LandPro08:reviewed,,LandPro08: revisat = no   Activar sí/no
-toilets:wheelchair,,lavabos: cadira de rodes = no   Activar sí/no
-passing_places,,llocs de pas = no   Activar sí/no
-luminous,,lluminós = no   Activar sí/no
-wholesale,,majorista = no   Activar sí/no
-forklift,,màquina elevadora = no   Activar sí/no
-seamark:radar_reflector,,marca de mar: reflector de radar = no   Activar sí/no
-lane_markings,,marques_de_carril = no   Activar sí/no
-hazmat,,materials perillosos = no   Activar sí/no
-maxspeed,,màxima velocitat = no   Activar sí/no
-median,,mitjana = no   Activar sí/no
-mofa,,mofa = no   Activar sí/no
-motorcycle,,motocicleta = no   Activar sí/no
-snowmobile,,motoneu = no   Activar sí/no
-motorboat,,motora = no   Activar sí/no
-handrail,,mural = no   Activar sí/no
-naptan:verified,,naptan: verificat = no   Activar sí/no
-name:signed,,nom: signat = no   Activar sí/no
-osmarender:render,,osmarender:renderitzar = no   Activar sí/no
-osmarender:renderRef,,osmarender:renderRef = no   Activar sí/no
-osmarender:renderName,,osmarender:representarNom = no   Activar sí/no
-payment:cash,,Pagament en efectiu = no   Activar sí/no
-payment:credit_cards,,pagament:credit_cards = no   Activar sí/no
-payment:debit_cards,,pagament:targetes_dèbit = no   Activar sí/no
-passenger_information_display,,pantalla_d'informació_del_passatger = no   Activar sí/no
-wall,,paret = no   Activar sí/no
-passenger,,passatger = no   Activar sí/no
-park_ride,,passeig del Parc = no   Activar sí/no
-tactile_paving,,paviment_tactil = no   Activar sí/no
-toll,,peatge = no   Activar sí/no
-maxweight:signed,,pes màxim: signat = no   Activar sí/no
-foot,,peu = no   Activar sí/no
-pole,,pol = no   Activar sí/no
-bridge,,pont = no   Activar sí/no
-flood_prone,,propens a inundar-se = no   Activar sí/no
-psv,,psv = no   Activar sí/no
-survey_point:datum_aligned,,punt d'aixecament: datum alineat = no   Activar sí/no
-ramp,,rampa = no   Activar sí/no
-trail_visibility,,rastre_visibilitat = no   Activar sí/no
-recycling:glass,,reciclatge:vidre = no   Activar sí/no
-rednap:nodo,,rednap: node = no   Activar sí/no
-shelter,,refugi = no   Activar sí/no
-backrest,,respatller = no   Activar sí/no
-review,,revisió = no   Activar sí/no
-salt,,sal = no   Activar sí/no
-outdoor_seating,,seients a l'aire lliure = no   Activar sí/no
-noexit,,Sense sortida = no   Activar sí/no
-traffic_signals:vibration,,senyals_de_tràfic: vibració = no   Activar sí/no
-traffic_signals:sound,,senyals_de_trànsit:so = no   Activar sí/no
-drive_through,,servei al carro = no   Activar sí/no
-winter_service,,servei_d'hivern = no   Activar sí/no
-departures_board,,sortides a bord = no   Activar sí/no
-roof:downpipe,,sostre: baixant = no   Activar sí/no
-supervised,,supervisat = no   Activar sí/no
-fee,,tarifa = no   Activar sí/no
-bench,,taula de treball = no   Activar sí/no
-changing_table,,taula per canviar bolquers = no   Activar sí/no
-tiger:reviewed,,tigre: revisat = no   Activar sí/no
-tiger:separated,,tigre: separat = no   Activar sí/no
-building,,tipus d'edifici = no   Activar sí/no
-ferry,,transportar = no   Activar sí/no
-train,,tren = no   Activar sí/no
-tunnel,,túnel = no   Activar sí/no
-oneway:moped,,unidireccional: ciclomotor = no   Activar sí/no
-oneway:mofa,,unidireccional: mofa = no   Activar sí/no
-oneway:psv,,unidireccional: psv = no   Activar sí/no
-boat,,vaixell = no   Activar sí/no
-vehicle,,vehicle = no   Activar sí/no
-motor_vehicle,,Vehicle de motor = no   Activar sí/no
-hgv,,vhg = no    Activar sí/no
-roundtrip,,viatge anada i tornada = no   Activar sí/no
-sidewalk,,vorera = no   Activar sí/no
-sidewalk:right,,vorera: dreta = no   Activar sí/no
-sidewalk:left,,vorera: esquerra = no   Activar sí/no
-air_conditioning,,aire_condicionat no   Activar sí/no
-armrest,,reposabraços no   Activar sí/no
-automated,,automatitzat no   Activar sí/no
-canoe,,canoa núm   Activar sí/no
-caravans,,caravanes núm   Activar sí/no
-cash_in,,cash_in núm   Activar sí/no
-crossing:markings,,creuament:marques no   Activar sí/no
-crossing:signals,,encreuament:senyals no   Activar sí/no
-cycleway:both:buffer,,via_ciclable:ambdues:interferència no   Activar sí/no
-cycleway:left:oneway,,via_ciclable:esquerra:sentit únic no   Activar sí/no
-cycleway:right:segregated,,via_ciclable:dreta:segregada no   Activar sí/no
-diet:halal,,dieta: halal no   Activar sí/no
-diet:kosher,,dieta: kosher no   Activar sí/no
-diet:vegan,,dieta: vegà no   Activar sí/no
-door,,porta no   Activar sí/no
-female,,femení no   Activar sí/no
-fire_hydrant:diameter:signed,,hidrant_incendi:diàmetre:signat núm   Activar sí/no
-flashing_lights,,llums_intermitents no   Activar sí/no
-floating,,flotant no   Activar sí/no
-generator:solar:tracking,,generador:solar:seguiment no   Activar sí/no
-geometry:reviewed,,geometria: revisat núm   Activar sí/no
-hgv:national_network,,camions:xarxa_nacional no   Activar sí/no
-indoor_seating,,seients_interiors no   Activar sí/no
-informal,,informal no   Activar sí/no
-LINZ:reviewed,,LINZ:revisat no   Activar sí/no
-maxheight:signed,,alçada_màxima:signed no   Activar sí/no
-maxstay,,estada màxima no   Activar sí/no
-overtaking:hgv,,overtaking:camions no   Activar sí/no
-parking:both:fee,,aparcament:ambdós:fee no   Activar sí/no
-parking:fee,,aparcament:fee no   Activar sí/no
-parking:left:fee,,aparcament:esquerra:fee no   Activar sí/no
-parking:right:fee,,aparcament:dreta:fee no   Activar sí/no
-payment:cards,,pagament:cards no   Activar sí/no
-payment:cryptocurrencies,,pagament:cryptocurrencies no   Activar sí/no
-payment:notes,,pagament:notes no   Activar sí/no
-power_supply,,power_supply no   Activar sí/no
-railway:atc,,ferrocarril:atc no   Activar sí/no
-railway:ctc,,ferrocarril:ctc no   Activar sí/no
-railway:evm,,ferrocarril:evm no   Activar sí/no
-railway:kvb,,ferrocarril:kvb no   Activar sí/no
-railway:ptc,,ferrocarril:ptc no   Activar sí/no
-railway:tilting,,ferrocarril:inclinació no   Activar sí/no
-railway:tvm,,ferrocarril:tvm no   Activar sí/no
-ramp:wheelchair,,rampa:cadira de rodes no   Activar sí/no
-recycling:plastic,,reciclatge:plàstic no   Activar sí/no
-ref:signed,,ref:signat no   Activar sí/no
-reservation,,reserva no   Activar sí/no
-sidewalk:both,,sidewalk:ambdós no   Activar sí/no
-takeaway,,per emportar no   Activar sí/no
-tourist_bus,,autobús turístic no   Activar sí/no
-trailblazed,,sender_traçat no   Activar sí/no
-trolley_wire,,cable_de_trolei no   Activar sí/no
+road_marking,no,marcació_carretera no Activar sí/no
+access,no,accés = no  Activar sí/no
+internet_access,no,accés a Internet = no  Activar sí/no
+access:roof,no,accés: sostre = no  Activar sí/no
+access:delivery,no,accés:lliurament = no  Activar sí/no
+managed,no,administrat = no  Activar sí/no
+agricultural,no,agrícola = no  Activar sí/no
+drinking_water,no,aigua potable = no  Activar sí/no
+segregated,no,aïllat = no  Activar sí/no
+highspeed,no,alta velocitat = no  Activar sí/no
+oneway:bus,no,anada: autobús = no  Activar sí/no
+oneway:bicycle,no,anada: bicicleta = no  Activar sí/no
+oneway:motorcycle,no,anada: motocicleta = no  Activar sí/no
+animated,no,animat = no  Activar sí/no
+area,no,àrea = no  Activar sí/no
+car,no,auto = no  Activar sí/no
+bus,no,autobús = no  Activar sí/no
+motorcar,no,automòbil = no  Activar sí/no
+expressway,no,Autopista = no  Activar sí/no
+highway,no,autopista = no  Activar sí/no
+self_service,no,autoservei = no  Activar sí/no
+dual_carriageway,no,autovia = no  Activar sí/no
+overtaking,no,avançament = no  Activar sí/no
+toilets,no,banys = no  Activar sí/no
+toilets:handwashing,no,banys: rentat de mans	=	no
+barrier,no,barrera	=	no
+goods,no,béns	=	no
+bicycle,no,bicicleta	=	no
+mtb,no,bicicleta de muntanya	=	no
+lockable,no,bloquejable	=	no
+locked,no,bloquejat	=	no
+pump,no,bomba	=	no
+shop,no,botiga	=	no
+button_operated,no,botó_operat	=	no
+wheelchair,no,cadira de rodes	=	no
+atm,no,Caixer automàtic	=	no
+traffic_calming,no,calmar el trànsit	=	no
+gutter,no,canal	=	no
+change:backward,no,canvi: al revés	=	no
+change:forward,no,canvi: endavant	=	no
+change:lanes:forward,no,canviar: carrils: endavant	=	no
+change:lanes:backward,no,canviar:carrils:darrere	=	no
+capacity:disabled,no,capacitat: deshabilitat	=	no
+capacity:parent,no,capacitat: pare	=	no
+capacity:women,no,capacitat:dones	=	no
+motorroad,no,carretera	=	no
+cycleway,no,carril bici	=	no
+cycleway:right,no,carril bici: dreta	=	no
+cycleway:foot,no,carril bici: peu	=	no
+cycleway:both,no,carril bici:tots dos	=	no
+carriage,no,carro	=	no
+horse,no,cavall	=	no
+moped,no,ciclomotor	=	no
+cycleway:right:buffer,no,ciclovia:dreta:amortidor	=	no
+cycleway:right:oneway,no,ciclovia:dreta:sentit únic	=	no
+cycleway:left,no,ciclovia:esquerra	=	no
+covered,no,cobert	=	no
+bin,no,compartiment	=	no
+crop,no,cultiu	=	no
+oneway,no,d'una sola mà	=	no
+smoking,no,de fumar	=	no
+tidal,no,de marea	=	no
+dispensing,no,dispensant	=	no
+building:fireproof,no,edifici: incombustible	=	no
+electrified,no,electrificat	=	no
+ship,no,Embarcació	=	no
+emergency,no,emergència	=	no
+crossing,no,encreuament	=	no
+crossing:island,no,encreuament: illa	=	no
+crossing:light,no,encreuament: llum	=	no
+crossing:barrier,no,encreuament:barrera	=	no
+crossing:bell,no,encreuament:campana	=	no
+entrance,no,entrada	=	no
+delivery,no,entrega	=	no
+school:selective,no,escola: selectiva	=	no
+shoulder,no,espatlla	=	no
+ski,no,esquí	=	no
+seasonal,no,estacional	=	no
+parking,no,estacionament	=	no
+parking:right,no,estacionament: dret	=	no
+parking:left,no,estacionament: esquerra	=	no
+parking:lane:both,no,estacionament:carril:tots dos	=	no
+parking:both,no,estacionament:tots dos	=	no
+flour_fortified,no,farina_fortificada	=	no
+railway:milestone:catenary_mast,no,ferrocarril: fita: catenary_mast	=	no
+railway:milestone:emergency_brake_override,no,ferrocarril: fita: emergency_brake_override	=	no
+railway:lzb,no,ferrocarril: lzb	=	no
+railway:ballastless,no,ferrocarril: sense balast	=	no
+railway:atb,no,ferrocarril:atb	=	no
+railway:etcs,no,ferrocarril:etc.	=	no
+railway:gnt,no,ferrocarril:gnt	=	no
+railway:switch:electric,no,ferrocarril:interruptor:elèctric	=	no
+railway:ls,no,ferrocarril:ls	=	no
+railway:local_operated,no,ferrocarril:operat_localment	=	no
+railway:pzb,no,ferrocarril:pzb	=	no
+railway:tbl,no,ferrocarril:tbl	=	no
+physically_present,no,físicament present	=	no
+FMMP_modified,no,FMMP_modificat	=	no
+FMMP_reviewed,no,FMMP_revisat	=	no
+kerb,no,frenar	=	no
+backup_generator,no,generador_de_respatller	=	no
+dog,no,gos	=	no
+historic,no,històric	=	no
+opening_hours:signed,no,horari_d'obertura:signat	=	no
+collection_times:signed,no,horaris de recollida:signat	=	no
+lit,no,il·luminat	=	no
+indoor,no,interior	=	no
+intermittent,no,intermitent	=	no
+internet_access:fee,no,internet_access:tarifa	=	no
+irrigated,no,irrigat	=	no
+LandPro08:reviewed,no,LandPro08: revisat	=	no
+toilets:wheelchair,no,lavabos: cadira de rodes	=	no
+passing_places,no,llocs de pas	=	no
+luminous,no,lluminós	=	no
+wholesale,no,majorista	=	no
+forklift,no,màquina elevadora	=	no
+seamark:radar_reflector,no,marca de mar: reflector de radar	=	no
+lane_markings,no,marques_de_carril	=	no
+hazmat,no,materials perillosos	=	no
+maxspeed,no,màxima velocitat	=	no
+median,no,mitjana	=	no
+mofa,no,mofa	=	no
+motorcycle,no,motocicleta	=	no
+snowmobile,no,motoneu	=	no
+motorboat,no,motora	=	no
+handrail,no,mural	=	no
+naptan:verified,no,naptan: verificat	=	no
+name:signed,no,nom: signat	=	no
+osmarender:render,no,osmarender:renderitzar	=	no
+osmarender:renderRef,no,osmarender:renderRef	=	no
+osmarender:renderName,no,osmarender:representarNom	=	no
+payment:cash,no,Pagament en efectiu	=	no
+payment:credit_cards,no,pagament:credit_cards	=	no
+payment:debit_cards,no,pagament:targetes_dèbit	=	no
+passenger_information_display,no,pantalla_d'informació_del_passatger	=	no
+wall,no,paret	=	no
+passenger,no,passatger	=	no
+park_ride,no,passeig del Parc	=	no
+tactile_paving,no,paviment_tactil	=	no
+toll,no,peatge	=	no
+maxweight:signed,no,pes màxim: signat	=	no
+foot,no,peu	=	no
+pole,no,pol	=	no
+bridge,no,pont	=	no
+flood_prone,no,propens a inundar-se	=	no
+psv,no,psv	=	no
+survey_point:datum_aligned,no,punt d'aixecament: datum alineat	=	no
+ramp,no,rampa	=	no
+trail_visibility,no,rastre_visibilitat	=	no
+recycling:glass,no,reciclatge:vidre	=	no
+rednap:nodo,no,rednap: node	=	no
+shelter,no,refugi	=	no
+backrest,no,respatller	=	no
+review,no,revisió	=	no
+salt,no,sal	=	no
+outdoor_seating,no,seients a l'aire lliure	=	no
+noexit,no,Sense sortida	=	no
+traffic_signals:vibration,no,senyals_de_tràfic: vibració	=	no
+traffic_signals:sound,no,senyals_de_trànsit:so	=	no
+drive_through,no,servei al carro	=	no
+winter_service,no,servei_d'hivern	=	no
+departures_board,no,sortides a bord	=	no
+roof:downpipe,no,sostre: baixant	=	no
+supervised,no,supervisat	=	no
+fee,no,tarifa	=	no
+bench,no,taula de treball	=	no
+changing_table,no,taula per canviar bolquers	=	no
+tiger:reviewed,no,tigre: revisat	=	no
+tiger:separated,no,tigre: separat	=	no
+building,no,tipus d'edifici	=	no
+ferry,no,transportar	=	no
+train,no,tren	=	no
+tunnel,no,túnel	=	no
+oneway:moped,no,unidireccional: ciclomotor	=	no
+oneway:mofa,no,unidireccional: mofa	=	no
+oneway:psv,no,unidireccional: psv	=	no
+boat,no,vaixell	=	no
+vehicle,no,vehicle	=	no
+motor_vehicle,no,Vehicle de motor	=	no
+hgv,no,vhg	=	no
+roundtrip,no,viatge anada i tornada	=	no
+sidewalk,no,vorera	=	no
+sidewalk:right,no,vorera: dreta	=	no
+sidewalk:left,no,vorera: esquerra	=	no
+air_conditioning,no,aire_condicionat no
+armrest,no,reposabraços no
+automated,no,automatitzat no
+canoe,no,canoa núm
+caravans,no,caravanes núm
+cash_in,no,cash_in núm
+crossing:markings,no,creuament:marques no
+crossing:signals,no,encreuament:senyals no
+cycleway:both:buffer,no,via_ciclable:ambdues:interferència no
+cycleway:left:oneway,no,via_ciclable:esquerra:sentit únic no
+cycleway:right:segregated,no,via_ciclable:dreta:segregada no
+diet:halal,no,dieta: halal no
+diet:kosher,no,dieta: kosher no
+diet:vegan,no,dieta: vegà no
+door,no,porta no
+female,no,femení no
+fire_hydrant:diameter:signed,no,hidrant_incendi:diàmetre:signat núm
+flashing_lights,no,llums_intermitents no
+floating,no,flotant no
+generator:solar:tracking,no,generador:solar:seguiment no
+geometry:reviewed,no,geometria: revisat núm
+hgv:national_network,no,camions:xarxa_nacional no
+indoor_seating,no,seients_interiors no
+informal,no,informal no
+LINZ:reviewed,no,LINZ:revisat no
+maxheight:signed,no,alçada_màxima:signed no
+maxstay,no,estada màxima no
+overtaking:hgv,no,overtaking:camions	no
+parking:both:fee,no,aparcament:ambdós:fee	no
+parking:fee,no,aparcament:fee	no
+parking:left:fee,no,aparcament:esquerra:fee	no
+parking:right:fee,no,aparcament:dreta:fee	no
+payment:cards,no,pagament:cards	no
+payment:cryptocurrencies,no,pagament:cryptocurrencies	no
+payment:notes,no,pagament:notes	no
+power_supply,no,power_supply	no
+railway:atc,no,ferrocarril:atc	no
+railway:ctc,no,ferrocarril:ctc	no
+railway:evm,no,ferrocarril:evm	no
+railway:kvb,no,ferrocarril:kvb	no
+railway:ptc,no,ferrocarril:ptc	no
+railway:tilting,no,ferrocarril:inclinació no
+railway:tvm,no,ferrocarril:tvm no
+ramp:wheelchair,no,rampa:cadira de rodes no
+recycling:plastic,no,reciclatge:plàstic no
+ref:signed,no,ref:signat no
+reservation,no,reserva no
+sidewalk:both,no,sidewalk:ambdós no
+takeaway,no,per emportar no
+tourist_bus,no,autobús turístic no
+trailblazed,no,sender_traçat no
+trolley_wire,no,cable_de_trolei no
 nysgissam:review,no matching street nearby,nysgissam:review	no matching carrer nearby
 seamark:restricted_area:restriction,no_anchorage,seamark:àrea restringida:restricció	=	sense ancoratge
 seamark:notice:category,no_anchoring,marca:avís:categoria	=	sense ancoratge
@@ -8489,4 +8489,4 @@ yh:STRUCTURE,通常水涯線,yh:STRUCTURE	通常水涯線
 operator:short,郵便局,operador:curt	郵便局
 operator:short:ja,郵便局,operador:curt:ja	郵便局
 addr:district,龜山區,adreça:districte 龜山區
-recycling:clothes,yes,reciclatge: roba = sí (Roba amiga)
+recycling:clothes,,reciclatge:roba (Roba amiga)  = Activar sí/no
