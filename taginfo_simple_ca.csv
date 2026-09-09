@@ -8489,4 +8489,4 @@ yh:STRUCTURE,通常水涯線,yh:STRUCTURE	通常水涯線
 operator:short,郵便局,operador:curt	郵便局
 operator:short:ja,郵便局,operador:curt:ja	郵便局
 addr:district,龜山區,adreça:districte 龜山區
-recycling:clothes,,reciclatge:roba (Roba amiga)  = Activar sí/no
+recycling:clothes,yes,reciclatge: roba = sí (Roba amiga)
