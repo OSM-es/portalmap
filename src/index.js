@@ -1233,62 +1233,20 @@ if (routeLayers.length > 0) {
                             }
                         });
                         
-                        // Choose appropriate imagery provider based on the current base layer
+                        // Choose imagery provider from the 3D layer registry,
+                        // which covers ALL 2D base layers (raster XYZ, WMS,
+                        // and raster equivalents for vector-tile styles)
                         if (currentBaseLayer) {
                             const layerTitle = currentBaseLayer.get('title') || '';
                             console.log('Current base layer:', layerTitle);
-                            
-                            // Map different base layers to appropriate Cesium providers
-                            if (layerTitle.includes('MapTiler') || layerTitle.includes('Basic')) {
-                                // Use a reliable satellite provider instead of MapTiler to avoid API key issues
-                                imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                                    tileWidth: 256,
-                                    tileHeight: 256,
-                                    minimumLevel: 0,
-                                    maximumLevel: 18
-                                });
-                            } else if (layerTitle.includes('OpenStreetMap') || layerTitle.includes('OSM')) {
-                                // Use OSM tiles
-                                imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                                    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                    subdomains: ['a', 'b', 'c'],
-                                    tileWidth: 256,
-                                    tileHeight: 256,
-                                    minimumLevel: 0,
-                                    maximumLevel: 19
-                                });
-                            } else if (layerTitle.includes('Satellite') || layerTitle.includes('Aerial')) {
-                                // Use a satellite provider
-                                imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                                    tileWidth: 256,
-                                    tileHeight: 256,
-                                    minimumLevel: 0,
-                                    maximumLevel: 18
-                                });
-                            } else {
-                                // Default fallback to OSM
-                                imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                                    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                    subdomains: ['a', 'b', 'c'],
-                                    tileWidth: 256,
-                                    tileHeight: 256,
-                                    minimumLevel: 0,
-                                    maximumLevel: 19
-                                });
-                            }
+                            const providerDef3D = (typeof LAYER_3D_DEFS !== 'undefined' && LAYER_3D_DEFS[layerTitle]) ||
+                                (typeof derive3DDefFromLayer === 'function' ? derive3DDefFromLayer(currentBaseLayer) : null) ||
+                                DEFAULT_3D_DEF;
+                            imageryProvider = build3DImageryProvider(providerDef3D);
                         } else {
                             // No base layer found, use default OSM
                             console.log('No base layer found, using default OSM');
-                            imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                subdomains: ['a', 'b', 'c'],
-                                tileWidth: 256,
-                                tileHeight: 256,
-                                minimumLevel: 0,
-                                maximumLevel: 19
-                            });
+                            imageryProvider = build3DImageryProvider(DEFAULT_3D_DEF);
                         }
                         
                         // Add the selected imagery provider
@@ -1744,77 +1702,287 @@ if (routeLayers.length > 0) {
 }
 
 // Function to refresh 3D imagery layers when queries interfere with background tiles
+// --- 3D background registry -------------------------------------------------
+// Maps every 2D base layer (src/config.js) to a Cesium imagery provider so the
+// 3D background selector can offer ALL 2D layers. Vector-tile styles (MVT)
+// cannot be rendered by Cesium, so they use a raster equivalent (proxyFor).
+const MAPTILER_KEY_3D = 'Faz9gJu55zrWejNF55oZ';
+
+const LAYER_3D_DEFS = {
+    'OpenStreetMap': {
+        kind: 'xyz',
+        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        maximumLevel: 19,
+        credit: '© OpenStreetMap contributors'
+    },
+    'OpenStreetMap DE': {
+        kind: 'xyz',
+        url: 'https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png',
+        subdomains: ['a', 'b', 'c'],
+        maximumLevel: 18,
+        credit: '© OpenStreetMap DE contributors'
+    },
+    'OpenStreetMap FR': {
+        kind: 'xyz',
+        url: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
+        subdomains: ['a', 'b', 'c'],
+        maximumLevel: 19,
+        credit: '© OpenStreetMap France'
+    },
+    'MapTiler Basic': {
+        kind: 'xyz',
+        url: 'https://api.maptiler.com/maps/basic/{z}/{x}/{y}.png?key=' + MAPTILER_KEY_3D,
+        maximumLevel: 17,
+        credit: '<a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> © OpenStreetMap contributors'
+    },
+    'Versatiles colorful': {
+        kind: 'xyz',
+        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        maximumLevel: 19,
+        credit: '© OpenStreetMap contributors',
+        proxyFor: 'vector style shown as raster OSM in 3D'
+    },
+    'OSM Customyopaseopor': {
+        kind: 'xyz',
+        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        maximumLevel: 19,
+        credit: '© OpenStreetMap contributors',
+        proxyFor: 'vector style shown as raster OSM in 3D'
+    },
+    'Esri Sat': {
+        kind: 'xyz',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        maximumLevel: 19,
+        credit: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    },
+    'ES_IGN - PNOA - Actual': {
+        kind: 'wms',
+        url: 'https://www.ign.es/wms-inspire/pnoa-ma?',
+        layers: 'OI.OrthoimageCoverage',
+        maximumLevel: 19,
+        credit: '© IGN España (PNOA)'
+    },
+    'ES_CAT_ICGC - Actual': {
+        kind: 'wms',
+        url: 'https://geoserveis.icgc.cat/servei/catalunya/orto-territorial/wms?',
+        layers: 'ortofoto_color_vigent',
+        maximumLevel: 19,
+        credit: '© ICGC — Institut Cartogràfic i Geològic de Catalunya'
+    }
+};
+
+// Default OSM definition used when no 2D layer matches
+const DEFAULT_3D_DEF = {
+    kind: 'xyz',
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    maximumLevel: 19,
+    credit: '© OpenStreetMap contributors'
+};
+
+// Build a Cesium imagery provider from a 3D layer definition
+function build3DImageryProvider(def) {
+    let provider;
+    if (def.kind === 'wms') {
+        provider = new Cesium.WebMapServiceImageryProvider({
+            url: def.url,
+            layers: def.layers,
+            parameters: {
+                service: 'WMS',
+                version: def.version || '1.3.0',
+                format: 'image/png',
+                transparent: true
+            },
+            maximumLevel: def.maximumLevel || 19,
+            credit: def.credit || ''
+        });
+    } else {
+        const providerOptions = {
+            url: def.url,
+            tileWidth: 256,
+            tileHeight: 256,
+            minimumLevel: 0,
+            maximumLevel: def.maximumLevel || 18,
+            credit: def.credit || ''
+        };
+        if (def.url.includes('{s}')) {
+            providerOptions.subdomains = def.subdomains || ['a', 'b', 'c'];
+        }
+        provider = new Cesium.UrlTemplateImageryProvider(providerOptions);
+    }
+    if (provider.errorEvent && provider.errorEvent.addEventListener) {
+        provider.errorEvent.addEventListener(function (error) {
+            console.warn('3D imagery tile error:', error);
+        });
+    }
+    return provider;
+}
+
+// Derive a 3D provider definition from any 2D base layer not present in the
+// registry (e.g. dynamically added layers): XYZ/OSM sources map to URL
+// templates, TileWMS maps to a WMS provider, VectorTile styles fall back to
+// a raster OSM background (Cesium cannot render MVT).
+function derive3DDefFromLayer(layer) {
+    try {
+        const source = layer.getSource && layer.getSource();
+        if (!source) {
+            return null;
+        }
+        if (typeof ol !== 'undefined' && source instanceof ol.source.VectorTile) {
+            return Object.assign({ proxyFor: 'vector style shown as raster OSM in 3D' }, DEFAULT_3D_DEF);
+        }
+        let maximumLevel = 19;
+        try {
+            if (layer.getMaxZoom && layer.getMaxZoom() > 0) {
+                maximumLevel = layer.getMaxZoom();
+            }
+        } catch (e) {}
+        let credit = '';
+        try {
+            const attr = source.getAttributions && source.getAttributions();
+            if (typeof attr === 'function') {
+                const parts = attr({});
+                credit = Array.isArray(parts) ? parts.join(' ') : String(parts || '');
+            } else if (Array.isArray(attr)) {
+                credit = attr.join(' ');
+            } else if (attr) {
+                credit = String(attr);
+            }
+        } catch (e) {}
+        if (typeof ol !== 'undefined' && source instanceof ol.source.TileWMS) {
+            const params = source.getParams ? source.getParams() : {};
+            let wmsUrl = (source.getUrls && source.getUrls()[0]) || '';
+            if (wmsUrl && wmsUrl.indexOf('?') === -1) {
+                wmsUrl += '?';
+            }
+            if (wmsUrl && params.LAYERS) {
+                return {
+                    kind: 'wms',
+                    url: wmsUrl,
+                    layers: params.LAYERS,
+                    version: params.VERSION || '1.3.0',
+                    maximumLevel: maximumLevel,
+                    credit: credit
+                };
+            }
+            return null;
+        }
+        const urls = source.getUrls ? source.getUrls() : null;
+        if (urls && urls.length > 0 && urls[0].indexOf('{z}') !== -1) {
+            return {
+                kind: 'xyz',
+                url: urls[0],
+                maximumLevel: maximumLevel,
+                credit: credit
+            };
+        }
+    } catch (error) {
+        console.warn('Could not derive 3D provider for layer:', error);
+    }
+    return null;
+}
+
+// Resolve the 3D definition for a 2D layer: registry first, then auto-derive
+function resolve3DDefForLayer(layer) {
+    const title = layer.get && layer.get('title');
+    return (title && LAYER_3D_DEFS[title]) || derive3DDefFromLayer(layer) || null;
+}
+
+// Build the 3D background option list from ALL 2D base layers
+function get3DBackgroundOptions() {
+    const options = [];
+    const added = new Set();
+    if (window.config && Array.isArray(window.config.layers)) {
+        window.config.layers.forEach(layer => {
+            if (!layer.get || layer.get('type') === 'overlay') {
+                return;
+            }
+            const title = layer.get('title');
+            if (!title || added.has(title)) {
+                return;
+            }
+            const def = resolve3DDefForLayer(layer);
+            if (def) {
+                options.push(Object.assign({ title: title }, def));
+                added.add(title);
+            }
+        });
+    }
+    return options;
+}
+
+// Fill a <select> with one option per 2D base layer, preselecting the
+// layer that is currently visible in 2D
+function fill3DBackgroundSelect(select) {
+    const options = get3DBackgroundOptions();
+    let currentTitle = '';
+    if (window.config && Array.isArray(window.config.layers)) {
+        window.config.layers.forEach(layer => {
+            if (layer.get && layer.get('type') !== 'overlay' && layer.getVisible && layer.getVisible()) {
+                currentTitle = layer.get('title') || '';
+            }
+        });
+    }
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option.title;
+        optionElement.text = option.title + (option.proxyFor ? ' *' : '');
+        optionElement.dataset.title = option.title;
+        if (option.proxyFor) {
+            optionElement.title = option.proxyFor;
+        }
+        if (option.title === currentTitle) {
+            optionElement.selected = true;
+        }
+        select.appendChild(optionElement);
+    });
+    return options.length > 0;
+}
+
+// Shared change handler for the 3D background <select>
+function on3DBackgroundSelectChange() {
+    if (!window.ol3d || !window.ol3d.getEnabled()) {
+        console.warn('3D background changes only available in 3D mode');
+        return;
+    }
+    const selectedTitle = this.options[this.selectedIndex].dataset.title;
+    // Registry first, then fall back to the matching 2D layer (auto-derived)
+    let def = LAYER_3D_DEFS[selectedTitle];
+    if (!def && window.config && Array.isArray(window.config.layers)) {
+        const layer = window.config.layers.find(l => l.get && l.get('title') === selectedTitle);
+        if (layer) {
+            def = resolve3DDefForLayer(layer);
+        }
+    }
+    if (def) {
+        change3DBackground(def, selectedTitle);
+    } else {
+        console.warn('No 3D provider found for layer:', selectedTitle);
+    }
+}
+
 function refresh3DImagery() {
     if (!window.ol3d || !window.ol3d.getEnabled()) {
         return;
     }
-    
+
     try {
         const scene = window.ol3d.getCesiumScene();
-        
+
         // Clear existing imagery layers
         scene.imageryLayers.removeAll();
-        
-        // Get the currently visible base layer from the 2D map
-        let currentBaseLayer = null;
-        let imageryProvider = null;
-        
-        // Find the currently visible base layer
-        config.layers.forEach(layer => {
-            if (layer.get && layer.get('type') !== 'overlay' && layer.getVisible && layer.getVisible()) {
-                currentBaseLayer = layer;
-            }
-        });
-        
-        // Choose appropriate imagery provider based on the current base layer
-        if (currentBaseLayer) {
-            const layerTitle = currentBaseLayer.get('title') || '';
-            console.log('Refreshing 3D imagery with base layer:', layerTitle);
-            
-            // Map different base layers to appropriate Cesium providers
-            if (layerTitle.includes('MapTiler') || layerTitle.includes('Basic')) {
-                // Use a reliable satellite provider instead of MapTiler to avoid API key issues
-                imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                    tileWidth: 256,
-                    tileHeight: 256,
-                    minimumLevel: 0,
-                    maximumLevel: 18
-                });
-            } else if (layerTitle.includes('OpenStreetMap') || layerTitle.includes('OSM')) {
-                // Use OSM tiles
-                imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    subdomains: ['a', 'b', 'c'],
-                    tileWidth: 256,
-                    tileHeight: 256,
-                    minimumLevel: 0,
-                    maximumLevel: 19
-                });
-            } else if (layerTitle.includes('Satellite') || layerTitle.includes('Aerial')) {
-                imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                    tileWidth: 256,
-                    tileHeight: 256,
-                    minimumLevel: 0,
-                    maximumLevel: 18
-                });
-            } else {
-                // Default provider
-                imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                    tileWidth: 256,
-                    tileHeight: 256,
-                    minimumLevel: 0,
-                    maximumLevel: 18
-                });
-            }
-            
-            // Add the imagery provider to the scene
-            scene.imageryLayers.addImageryProvider(imageryProvider);
-            
-            console.log('3D imagery refreshed successfully');
+
+        // Rebuild imagery from the 2D layer that is currently visible
+        let currentLayer = null;
+        if (window.config && Array.isArray(window.config.layers)) {
+            window.config.layers.forEach(layer => {
+                if (layer.get && layer.get('type') !== 'overlay' && layer.getVisible && layer.getVisible()) {
+                    currentLayer = layer;
+                }
+            });
         }
+        const def = (currentLayer && resolve3DDefForLayer(currentLayer)) || DEFAULT_3D_DEF;
+        scene.imageryLayers.addImageryProvider(build3DImageryProvider(def));
+        console.log('3D imagery refreshed with:', (currentLayer && currentLayer.get('title')) || 'default OSM');
     } catch (error) {
         console.warn('Failed to refresh 3D imagery:', error);
     }
@@ -2021,34 +2189,18 @@ function show3DBackgroundSelector() {
         font-size: 13px;
     `;
     
-    // Add background options
-    const options = [
-        { value: 'osm', text: 'OpenStreetMap', url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' },
-        { value: 'satellite', text: 'Satellite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' },
-        { value: 'terrain', text: 'Terrain', url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png' }
-    ];
+    // Populate with ALL 2D base layers (3D-capable sources from the registry)
+    fill3DBackgroundSelect(select);
     
-    options.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option.value;
-        optionElement.text = option.text;
-        optionElement.dataset.url = option.url;
-        select.appendChild(optionElement);
-    });
-    
-    select.addEventListener('change', function() {
-        // Only allow background changes when in 3D mode
-        if (!window.ol3d || !window.ol3d.getEnabled()) {
-            console.warn('3D background changes only available in 3D mode');
-            return;
-        }
-        
-        const selectedOption = this.options[this.selectedIndex];
-        const newUrl = selectedOption.dataset.url;
-        change3DBackground(newUrl, selectedOption.text);
-    });
+    select.addEventListener('change', on3DBackgroundSelectChange);
     
     selectorContainer.appendChild(select);
+    
+    // Note for vector-tile layers rendered via raster equivalents in 3D
+    const rasterNote = document.createElement('div');
+    rasterNote.style.cssText = 'margin-top: 4px; font-size: 10px; color: #888;';
+    rasterNote.textContent = '* = raster version (vector styles approximated in 3D)';
+    selectorContainer.appendChild(rasterNote);
     
     // Mapterhorn terrain attribution (elevation applies to all 3D backgrounds)
     const terrainNote = document.createElement('div');
@@ -2097,28 +2249,18 @@ function show3DBackgroundSelectorFallback() {
         background: white;
     `;
     
-    // Add background options
-    const options = [
-        { value: 'osm', text: 'OpenStreetMap', url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' },
-        { value: 'satellite', text: 'Satellite', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' },
-        { value: 'terrain', text: 'Terrain', url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png' }
-    ];
+    // Populate with ALL 2D base layers (3D-capable sources from the registry)
+    fill3DBackgroundSelect(select);
     
-    options.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option.value;
-        optionElement.text = option.text;
-        optionElement.dataset.url = option.url;
-        select.appendChild(optionElement);
-    });
-    
-    select.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const newUrl = selectedOption.dataset.url;
-        change3DBackground(newUrl, selectedOption.text);
-    });
+    select.addEventListener('change', on3DBackgroundSelectChange);
     
     selectorContainer.appendChild(select);
+    
+    // Note for vector-tile layers rendered via raster equivalents in 3D
+    const rasterNote = document.createElement('div');
+    rasterNote.style.cssText = 'margin-top: 4px; font-size: 10px; color: #888;';
+    rasterNote.textContent = '* = raster version (vector styles approximated in 3D)';
+    selectorContainer.appendChild(rasterNote);
     
     // Mapterhorn terrain attribution (elevation applies to all 3D backgrounds)
     const terrainNote = document.createElement('div');
@@ -2149,39 +2291,13 @@ function change3DBackground(newUrl, layerName) {
         // Remove all existing imagery layers
         scene.imageryLayers.removeAll();
         
-        // Create new imagery provider
-        let imageryProvider;
+        // Accept either a registry definition object or a legacy URL string
+        const def = (typeof newUrl === 'object' && newUrl !== null)
+            ? newUrl
+            : { kind: 'xyz', url: newUrl };
         
-        if (newUrl.includes('{s}')) {
-            // OSM-style with subdomains
-            imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                url: newUrl,
-                subdomains: ['a', 'b', 'c'],
-                tileWidth: 256,
-                tileHeight: 256,
-                minimumLevel: 0,
-                maximumLevel: 19
-            });
-        } else {
-            // Direct URL without subdomains
-            imageryProvider = new Cesium.UrlTemplateImageryProvider({
-                url: newUrl,
-                tileWidth: 256,
-                tileHeight: 256,
-                minimumLevel: 0,
-                maximumLevel: 18
-            });
-        }
-        
-        // Add error handling if available
-        if (imageryProvider.errorEvent && imageryProvider.errorEvent.addEventListener) {
-            imageryProvider.errorEvent.addEventListener(function(error) {
-                console.warn('Imagery provider tile loading error:', error);
-            });
-        }
-        
-        // Add the new imagery provider
-        scene.imageryLayers.addImageryProvider(imageryProvider);
+        // Create and add the new imagery provider
+        scene.imageryLayers.addImageryProvider(build3DImageryProvider(def));
         
         console.log('Changed 3D background to:', layerName);
         
