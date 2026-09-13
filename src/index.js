@@ -1205,9 +1205,15 @@ if (routeLayers.length > 0) {
     routeLayers.forEach(layer => layer.setVisible(true));
 }
 
-                        // Set up terrain provider
+                        // Set up terrain provider: real elevation from Mapterhorn
+                        // terrarium WebP DEM tiles, applied to ALL 3D imagery layers
                         try {
-                            scene.terrainProvider = new Cesium.EllipsoidTerrainProvider();
+                            if (typeof setMapterhornTerrain === 'function') {
+                                setMapterhornTerrain(scene, true);
+                            } else {
+                                console.warn('Mapterhorn terrain provider not loaded, using flat ellipsoid');
+                                scene.terrainProvider = new Cesium.EllipsoidTerrainProvider();
+                            }
                         } catch (error) {
                             console.warn('Failed to set terrain provider, using default:', error);
                             // Continue without custom terrain provider
@@ -2044,6 +2050,12 @@ function show3DBackgroundSelector() {
     
     selectorContainer.appendChild(select);
     
+    // Mapterhorn terrain attribution (elevation applies to all 3D backgrounds)
+    const terrainNote = document.createElement('div');
+    terrainNote.style.cssText = 'margin-top: 6px; font-size: 11px; color: #666;';
+    terrainNote.innerHTML = '⛰ Terrain elevation: <a href="https://mapterhorn.com/attribution" target="_blank" style="color:#007cba;">© Mapterhorn</a>';
+    selectorContainer.appendChild(terrainNote);
+    
     // Add to the layer menu after the return button
     const returnButton = document.getElementById('return-to-2d-btn');
     if (returnButton) {
@@ -2107,6 +2119,13 @@ function show3DBackgroundSelectorFallback() {
     });
     
     selectorContainer.appendChild(select);
+    
+    // Mapterhorn terrain attribution (elevation applies to all 3D backgrounds)
+    const terrainNote = document.createElement('div');
+    terrainNote.style.cssText = 'margin-top: 6px; font-size: 11px; color: #666;';
+    terrainNote.innerHTML = '⛰ Terrain elevation: <a href="https://mapterhorn.com/attribution" target="_blank" style="color:#007cba;">© Mapterhorn</a>';
+    selectorContainer.appendChild(terrainNote);
+    
     document.body.appendChild(selectorContainer);
 }
 
