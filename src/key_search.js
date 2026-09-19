@@ -736,15 +736,17 @@ function initKeySearch() {
             iconSrc: 'src/img/icones_web/tag_icon.png',
             iconStyle: 'filter: hue-rotate(120deg);',
             visible: true,
+            // Clamp to real terrain elevation in 3D mode (Mapterhorn DEM)
+            altitudeMode: 'clampToGround',
             style: new ol.style.Style({
                 image: new ol.style.Circle({
-                    radius: 4,
+                    radius: 6,
                     fill: new ol.style.Fill({
-                        color: [...uniqueColor, 0.7]
+                        color: [...uniqueColor, 0.9]
                     }),
                     stroke: new ol.style.Stroke({
-                        color: [...uniqueColor, 1],
-                        width: 1
+                        color: '#ffffff',
+                        width: 2
                     })
                 }),
                 stroke: new ol.style.Stroke({
@@ -793,6 +795,8 @@ function initKeySearch() {
         }
 
         // Add the new layer to the group
+        // Hug the terrain in 3D mode
+        if (typeof apply3DTerrainClamping === 'function') apply3DTerrainClamping(vectorLayer);
         layersCollection.push(vectorLayer);
         console.log('🔍 Vector layer added to group, total layers:', layersCollection.getLength());
 
@@ -925,6 +929,8 @@ function initKeySearch() {
             type: 'tag-query',
             layers: []
         });
+        // Hug the terrain in 3D mode
+        if (typeof apply3DTerrainClamping === 'function') apply3DTerrainClamping(overlaysGroup);
 
         // Set additional properties to match the expected overlay structure
         overlaysGroup.set('originalTitle', 'Tag Queries');

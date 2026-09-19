@@ -61,6 +61,9 @@ function createOlLayer(overlay) {
         visible: false
     });
 
+    // Hug the terrain in 3D mode (Mapterhorn elevation)
+    if (typeof apply3DTerrainClamping === 'function') apply3DTerrainClamping(layer);
+
     // Add a reference to the original overlay for easier access
     layer.overlay = overlay;
     
@@ -81,6 +84,8 @@ function createOverlayGroup(title, layers) {
         layers: new ol.Collection(layers),
         visible: true
     });
+    // Hug the terrain in 3D mode
+    if (typeof apply3DTerrainClamping === 'function') apply3DTerrainClamping(group);
     
     // Store the original title on each layer for reference
     layers.forEach(layer => {

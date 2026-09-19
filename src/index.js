@@ -483,6 +483,8 @@ $(function () {
 		vectorProperties['visible'] = false;
 
 		vector = new ol.layer.Vector(vectorProperties);
+		// Hug the terrain in 3D mode (overpass results sit on real elevation)
+		if (typeof apply3DTerrainClamping === 'function') apply3DTerrainClamping(vector);
 
 		if (overlaysTemp[layerGroup] !== undefined) {
 			overlaysTemp[layerGroup].push(vector);
@@ -497,6 +499,8 @@ $(function () {
 			type: 'overlay',
 			layers: value
 		});
+		// Clamp all overlay sublayers to terrain in 3D mode
+		if (typeof apply3DTerrainClamping === 'function') apply3DTerrainClamping(layerGroup);
 		config.layers.push(layerGroup);
 	});
 
@@ -1127,6 +1131,9 @@ function toggle3DControlBuild() {
     let ol3d = null;
     let is3d = false;
     let cesiumInitialized = false;
+    // Keeps the untouched ol-cesium synchronizeOverlays while it is patched
+    // during 3D enable; used to restore it reliably (incl. on 3D exit).
+    const overlaySyncOriginalRef = { original: null };
 
     // Store the click handler reference for the return-to-2D button
     const clickHandler = async function() {
@@ -1139,6 +1146,13 @@ function toggle3DControlBuild() {
             }
             
 console.log('3D toggle clicked, current is3d state:', is3d);
+// Heal state desync (e.g. after fallback return-to-2D paths): trust the
+// actual ol3d enabled state over the closure flag.
+try {
+    if (ol3d && typeof ol3d.getEnabled === 'function') {
+        is3d = ol3d.getEnabled();
+    }
+} catch (stateError) { /* keep closure state */ }
 if (!is3d) {
     // Initialize Cesium if not already done
     let routeLayers = []; // Move declaration to higher scope
@@ -1222,67 +1236,10 @@ if (routeLayers.length > 0) {
                         // Clear any existing imagery layers
                         scene.imageryLayers.removeAll();
                         
-                        // Get the currently visible base layer from the 2D map
-                        let currentBaseLayer = null;
-                        let imageryProvider = null;
-                        
-                        // Find the currently visible base layer
-                        config.layers.forEach(layer => {
-                            if (layer.get && layer.get('type') !== 'overlay' && layer.getVisible && layer.getVisible()) {
-                                currentBaseLayer = layer;
-                            }
-                        });
-                        
-                        // Choose imagery provider from the 3D layer registry,
-                        // which covers ALL 2D base layers (raster XYZ, WMS,
-                        // and raster equivalents for vector-tile styles)
-                        if (currentBaseLayer) {
-                            const layerTitle = currentBaseLayer.get('title') || '';
-                            console.log('Current base layer:', layerTitle);
-                            const providerDef3D = (typeof LAYER_3D_DEFS !== 'undefined' && LAYER_3D_DEFS[layerTitle]) ||
-                                (typeof derive3DDefFromLayer === 'function' ? derive3DDefFromLayer(currentBaseLayer) : null) ||
-                                DEFAULT_3D_DEF;
-                            imageryProvider = build3DImageryProvider(providerDef3D);
-                        } else {
-                            // No base layer found, use default OSM
-                            console.log('No base layer found, using default OSM');
-                            imageryProvider = build3DImageryProvider(DEFAULT_3D_DEF);
-                        }
-                        
-                        // Add the selected imagery provider
-                        try {
-                            scene.imageryLayers.addImageryProvider(imageryProvider);
-                            console.log('Successfully added imagery provider for 3D view');
-                            
-                            // Add error handling for tile loading errors (only if errorEvent exists)
-                            if (imageryProvider.errorEvent && imageryProvider.errorEvent.addEventListener) {
-                                imageryProvider.errorEvent.addEventListener(function(error) {
-                                    console.warn('Imagery provider tile loading error:', error);
-                                    // Silently handle tile errors to prevent console spam
-                                });
-                            }
-                            
-                        } catch (error) {
-                            console.error('Error adding imagery provider, using fallback:', error);
-                            // Fallback to simple OSM provider
-                            const fallbackProvider = new Cesium.UrlTemplateImageryProvider({
-                                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                subdomains: ['a', 'b', 'c'],
-                                tileWidth: 256,
-                                tileHeight: 256,
-                                minimumLevel: 0,
-                                maximumLevel: 19
-                            });
-                            
-                            // Add error handling to fallback provider as well (only if errorEvent exists)
-                            if (fallbackProvider.errorEvent && fallbackProvider.errorEvent.addEventListener) {
-                                fallbackProvider.errorEvent.addEventListener(function(error) {
-                                    console.warn('Fallback imagery provider tile loading error:', error);
-                                });
-                            }
-                            
-                            scene.imageryLayers.addImageryProvider(fallbackProvider);
-                        }
+                        // Build imagery for the currently visible 2D base layer
+                        // (uses the 3D registry: raster XYZ, WMS and raster
+                        // equivalents for vector-tile styles)
+                        add3DImageryForCurrentBase(scene);
                         
                         // Disable Cesium ion features that require authentication
                         Cesium.Ion.defaultAccessToken = null;
@@ -1334,22 +1291,52 @@ if (routeLayers.length > 0) {
                     }
                 }
                 
+                // ALWAYS (re)store the global ol3d reference: the 3D background
+                // selector, refresh3DImagery and change3DBackground depend on it.
+                // Nulling it after returning to 2D (previous behavior) left the
+                // selector dead after a second 2D->3D switch.
+                window.ol3d = ol3d;
+                
+                // Ensure the globe has imagery on every enable: after repeated
+                // 2D/3D switches the scene can end up without imagery layers,
+                // which rendered as a blank globe.
+                try {
+                    const sceneForImagery = ol3d.getCesiumScene();
+                    if (sceneForImagery.imageryLayers && sceneForImagery.imageryLayers.length === 0) {
+                        console.log('3D scene has no imagery, rebuilding from current 2D base layer');
+                        add3DImageryForCurrentBase(sceneForImagery);
+                    }
+                } catch (imageryError) {
+                    console.warn('Could not verify 3D imagery:', imageryError);
+                }
+                
                 // Wait before enabling Cesium to allow complete initialization
                 await new Promise(resolve => setTimeout(resolve, 500));
                 
-                // Temporarily disable overlay synchronizer to prevent SynchronizedOverlay errors
+                // Temporarily disable overlay synchronizer to prevent SynchronizedOverlay errors.
+                // The saved original is tracked in overlaySyncOriginalRef so the
+                // 3D-exit path can always restore the untouched function, even if
+                // this timer is cancelled or runs twice.
                 const overlaySynchronizer = ol3d.overlaySynchronizer;
                 if (overlaySynchronizer && overlaySynchronizer.synchronizeOverlays) {
-                    const originalSync = overlaySynchronizer.synchronizeOverlays;
-                    overlaySynchronizer.synchronizeOverlays = function() {
+                    const currentSync = overlaySynchronizer.synchronizeOverlays;
+                    if (!overlaySyncOriginalRef.original && !currentSync.__portalSyncNoop) {
+                        overlaySyncOriginalRef.original = currentSync;
+                    }
+                    const initSyncNoop = function() {
                         // Skip synchronization during initialization
                         console.log('Skipping overlay synchronization during 3D initialization');
                     };
+                    initSyncNoop.__portalSyncNoop = true;
+                    overlaySynchronizer.synchronizeOverlays = initSyncNoop;
                     
                     // Restore original synchronization after a delay
                     setTimeout(() => {
-                        overlaySynchronizer.synchronizeOverlays = originalSync;
-                        console.log('Restored overlay synchronization');
+                        if (overlaySyncOriginalRef.original) {
+                            overlaySynchronizer.synchronizeOverlays = overlaySyncOriginalRef.original;
+                            overlaySyncOriginalRef.original = null;
+                            console.log('Restored overlay synchronization');
+                        }
                     }, 3000);
                 }
                 
@@ -1451,21 +1438,21 @@ if (routeLayers.length > 0) {
                 console.log('Updated is3d state to false');
                 
                 // Comprehensive cleanup of ol-cesium to prevent SynchronizedOverlay errors
-                if (window.ol3d) {
-                    try {
-                        // Force complete cleanup of ol-cesium
-                        if (window.ol3d.overlaySynchronizer) {
-                            // Disable overlay synchronizer completely
-                            window.ol3d.overlaySynchronizer.dispose();
-                            console.log('Disposed overlay synchronizer');
-                        }
-                        
-                        // Clear any remaining references
-                        window.ol3d = null;
-                        console.log('Cleared ol3d reference');
-                    } catch (cleanupError) {
-                        console.warn('Error during ol-cesium cleanup:', cleanupError);
+                // NOTE: we no longer dispose the overlay synchronizer nor null
+                // window.ol3d here. Disposing broke the NEXT 3D enable (the
+                // instance is reused because cesiumInitialized stays true), and
+                // nulling window.ol3d killed the 3D background selector and
+                // refresh3DImagery after switching back to 3D. ol3d.setEnabled
+                // (false) alone is the supported way to stop the sync.
+                try {
+                    // Stop any pending async synchronizer restore from the
+                    // enable path so it cannot re-patch after we've left 3D.
+                    if (ol3d.overlaySynchronizer && overlaySyncOriginalRef.original) {
+                        ol3d.overlaySynchronizer.synchronizeOverlays = overlaySyncOriginalRef.original;
+                        overlaySyncOriginalRef.original = null;
                     }
+                } catch (cleanupError) {
+                    console.warn('Error during ol-cesium cleanup:', cleanupError);
                 }
                 
                 // Refined global patch to prevent SynchronizedOverlay creation without interfering with UI
@@ -1484,9 +1471,11 @@ if (routeLayers.length > 0) {
                                     // Only disable overlay synchronizer, don't force full cleanup
                                     if (window.ol3d.overlaySynchronizer) {
                                         const originalSync = window.ol3d.overlaySynchronizer.synchronizeOverlays;
-                                        window.ol3d.overlaySynchronizer.synchronizeOverlays = function() {
+                                        const syncNoop = function() {
                                             // Skip synchronization in 2D mode
                                         };
+                                        syncNoop.__portalSyncNoop = true;
+                                        window.ol3d.overlaySynchronizer.synchronizeOverlays = syncNoop;
 
                                         // Restore synchronization after a short delay
                                         setTimeout(() => {
@@ -1564,15 +1553,14 @@ if (routeLayers.length > 0) {
                         console.log('Applied OverlaySynchronizer constructor override');
                     }
                     
-                    // Override any existing overlay synchronizer methods
+                    // NOTE: do NOT permanently no-op the instance's
+                    // synchronizeOverlays here. window.ol3d now survives the
+                    // 2D switch (the background selector needs it), and a
+                    // permanent no-op would also disable sync in the NEXT 3D
+                    // session. Temporarily patching around individual overlay
+                    // additions (see the pinMap code) is enough.
                     if (window.ol3d && window.ol3d.overlaySynchronizer) {
-                        window.ol3d.overlaySynchronizer.addOverlay = function() {
-                            console.log('addOverlay blocked in 2D mode');
-                        };
-                        window.ol3d.overlaySynchronizer.synchronizeOverlays = function() {
-                            console.log('synchronizeOverlays blocked in 2D mode');
-                        };
-                        console.log('Applied overlay synchronizer method overrides');
+                        console.log('Overlay synchronizer kept intact for next 3D session');
                     }
                     
                     // Note: OpenLayers overlay collection doesn't have off() method
@@ -1669,13 +1657,19 @@ if (routeLayers.length > 0) {
                     console.log('Second pass: Hidden all spinner elements');
                 }, 100);
                 
-                // Update 2D map view to match 3D camera
+                // Update 2D map view to match 3D camera (with validity guard:
+                // an invalid camera position would otherwise blank the 2D view)
                 const view = map.getView();
-                view.setCenter(ol.proj.fromLonLat([
-                    Cesium.Math.toDegrees(position.longitude),
-                    Cesium.Math.toDegrees(position.latitude)
-                ]));
-                view.setZoom(Math.log2(10000000 / position.height) / Math.log2(1.5));
+                if (position && isFinite(position.longitude) && isFinite(position.latitude) && position.height > 0) {
+                    view.setCenter(ol.proj.fromLonLat([
+                        Cesium.Math.toDegrees(position.longitude),
+                        Cesium.Math.toDegrees(position.latitude)
+                    ]));
+                    const zoom2D = Math.log2(10000000 / position.height) / Math.log2(1.5);
+                    if (isFinite(zoom2D)) {
+                        view.setZoom(zoom2D);
+                    }
+                }
                 
                 button.innerHTML = '<i class="fa fa-cube"></i>';
                 button.title = 'Switch to 3D';
@@ -1702,6 +1696,32 @@ if (routeLayers.length > 0) {
 }
 
 // Function to refresh 3D imagery layers when queries interfere with background tiles
+// --- 3D Overpass results: terrain clamping + marker visibility ---------------
+// Overpass features are synced to Cesium by ol-cesium. Without an altitudeMode
+// they sit at ellipsoid height 0 while the globe now uses real Mapterhorn
+// terrain, so markers appeared displaced (buried under mountains). ol-cesium
+// 2.15.1 reads 'altitudeMode' from the feature's geometry, the feature itself,
+// or the layer, and maps 'clampToGround' to Cesium's CLAMP_TO_GROUND for
+// billboards, labels, polylines and ground primitives.
+//
+// Node markers are also barely visible in 3D (small + translucent), so the
+// style callback boosts point markers when the globe is in 3D mode.
+
+// Marks a vector layer so its features hug the terrain in 3D mode. Node
+// markers also use a stronger fill and a white outline (see the style
+// definitions in value_search.js / key_search.js) to stay visible over
+// imagery and terrain relief.
+function apply3DTerrainClamping(layer) {
+    try {
+        if (layer && typeof layer.set === 'function') {
+            layer.set('altitudeMode', 'clampToGround');
+        }
+    } catch (e) {
+        console.warn('Could not apply 3D terrain clamping to layer:', e);
+    }
+    return layer;
+}
+
 // --- 3D background registry -------------------------------------------------
 // Maps every 2D base layer (src/config.js) to a Cesium imagery provider so the
 // 3D background selector can offer ALL 2D layers. Vector-tile styles (MVT)
@@ -1960,6 +1980,48 @@ function on3DBackgroundSelectChange() {
     }
 }
 
+// Get the currently visible 2D base layer (non-overlay, visible)
+function getCurrent2DBaseLayer() {
+    let currentLayer = null;
+    if (window.config && Array.isArray(window.config.layers)) {
+        window.config.layers.forEach(layer => {
+            if (layer.get && layer.get('type') !== 'overlay' && layer.getVisible && layer.getVisible()) {
+                currentLayer = layer;
+            }
+        });
+    }
+    return currentLayer;
+}
+
+// (Re)build the Cesium globe imagery from the currently visible 2D base
+// layer. Shared by the initial 3D init, the re-enable path (blank-globe fix)
+// and refresh3DImagery so all paths behave identically.
+function add3DImageryForCurrentBase(scene) {
+    if (!scene || typeof Cesium === 'undefined') {
+        return;
+    }
+    try {
+        scene.imageryLayers.removeAll();
+        const currentLayer = getCurrent2DBaseLayer();
+        let def = (currentLayer && resolve3DDefForLayer(currentLayer)) || null;
+        if (!def) {
+            def = DEFAULT_3D_DEF;
+        }
+        const provider = build3DImageryProvider(def);
+        scene.imageryLayers.addImageryProvider(provider);
+        console.log('3D imagery built for:', (currentLayer && currentLayer.get('title')) || 'default OSM');
+    } catch (error) {
+        console.error('Failed to build 3D imagery:', error);
+        // Last-resort fallback so the globe is never left blank
+        try {
+            scene.imageryLayers.removeAll();
+            scene.imageryLayers.addImageryProvider(build3DImageryProvider(DEFAULT_3D_DEF));
+        } catch (fallbackError) {
+            console.error('3D imagery fallback also failed:', fallbackError);
+        }
+    }
+}
+
 function refresh3DImagery() {
     if (!window.ol3d || !window.ol3d.getEnabled()) {
         return;
@@ -1967,22 +2029,7 @@ function refresh3DImagery() {
 
     try {
         const scene = window.ol3d.getCesiumScene();
-
-        // Clear existing imagery layers
-        scene.imageryLayers.removeAll();
-
-        // Rebuild imagery from the 2D layer that is currently visible
-        let currentLayer = null;
-        if (window.config && Array.isArray(window.config.layers)) {
-            window.config.layers.forEach(layer => {
-                if (layer.get && layer.get('type') !== 'overlay' && layer.getVisible && layer.getVisible()) {
-                    currentLayer = layer;
-                }
-            });
-        }
-        const def = (currentLayer && resolve3DDefForLayer(currentLayer)) || DEFAULT_3D_DEF;
-        scene.imageryLayers.addImageryProvider(build3DImageryProvider(def));
-        console.log('3D imagery refreshed with:', (currentLayer && currentLayer.get('title')) || 'default OSM');
+        add3DImageryForCurrentBase(scene);
     } catch (error) {
         console.warn('Failed to refresh 3D imagery:', error);
     }
@@ -2512,10 +2559,19 @@ document.head.appendChild(style);
 	map.on('moveend', function (evt) {
 		$('#map').css('cursor', 'grab');
 		updatePermalink();
-	});
-
-	var selectedFeature = null;
+	});	var selectedFeature = null;
 	map.on('pointermove', function (evt) {
+		// In 3D mode the 2D pointermove hover cannot see vector features; the
+		// Cesium-based handler in click3d.js takes care of the hover cursor.
+		if (window.ol3d && typeof window.ol3d.getEnabled === 'function' && window.ol3d.getEnabled()) {
+			window.dispatchEvent(new CustomEvent('portal3DPointerMove', {
+				detail: {
+					originalEvent: evt.originalEvent || null,
+					pixel: evt.pixel
+				}
+			}));
+			return;
+		}
 		if (selectedFeature !== null) {
 			if (typeof selectedFeature.setStyle === 'function') {
                 selectedFeature.setStyle(undefined);
@@ -2544,7 +2600,20 @@ document.head.appendChild(style);
 		});
 	});
 
-		map.on('singleclick', function (evt) {
+	map.on('singleclick', function (evt) {
+			// In 3D mode, OL vector features are not hit-tested by the 2D renderer,
+			// so feature info is provided by the Cesium click handler below
+			// (see handle3DMapClick), and we skip the 2D pin/popup entirely.
+			if (window.ol3d && typeof window.ol3d.getEnabled === 'function' && window.ol3d.getEnabled()) {
+				window.dispatchEvent(new CustomEvent('portal3DMapClick', {
+					detail: {
+						originalEvent: evt.originalEvent || null,
+						pixel: evt.pixel,
+						coordinate: evt.coordinate
+					}
+				}));
+				return;
+			}
 			console.log('🗺️ Map clicked - processing click event');
 
 			var coordinate = evt.coordinate,
@@ -2697,7 +2766,6 @@ document.head.appendChild(style);
 	});
 });
 
-// Listen for overlay toggles and update summary
 window.addEventListener('overlayToggled', function(e) {
     // Count all visible overlay features
     var total = 0;

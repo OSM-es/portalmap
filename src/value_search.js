@@ -74,6 +74,8 @@ function processQueryResults(allFeatures, key, value) {
         iconSrc: 'src/img/icones_web/tag_icon.png',
         iconStyle: 'filter: hue-rotate(120deg);',
         visible: true,
+        // Clamp to real terrain elevation in 3D mode (Mapterhorn DEM)
+        altitudeMode: 'clampToGround',
         style: function(feature) {
             const geometry = feature.getGeometry();
             const geometryType = geometry.getType();
@@ -99,7 +101,7 @@ function processQueryResults(allFeatures, key, value) {
                         image: new ol.style.Circle({
                             radius: 6,
                             fill: new ol.style.Fill({
-                                color: [...generateQueryColor(vectorLayer.get('id'), false), 0.4]
+                                color: [...generateQueryColor(vectorLayer.get('id'), false), 0.8]
                             }),
                             stroke: new ol.style.Stroke({
                                 color: [...generateQueryColor(vectorLayer.get('id'), false), 1.0],
@@ -110,13 +112,13 @@ function processQueryResults(allFeatures, key, value) {
                 }
                 return new ol.style.Style({
                     image: new ol.style.Circle({
-                        radius: 4,
+                        radius: 6,
                         fill: new ol.style.Fill({
-                            color: [...generateQueryColor(vectorLayer.get('id'), false), 0.6]
+                            color: [...generateQueryColor(vectorLayer.get('id'), false), 0.9]
                         }),
                         stroke: new ol.style.Stroke({
-                            color: generateQueryColor(vectorLayer.get('id'), false),
-                            width: 1
+                            color: '#ffffff',
+                            width: 2
                         })
                     })
                 });
@@ -168,7 +170,7 @@ function processQueryResults(allFeatures, key, value) {
                         image: new ol.style.Circle({
                             radius: 6,
                             fill: new ol.style.Fill({
-                                color: [...generateQueryColor(vectorLayer.get('id'), false), 0.4]
+                                color: [...generateQueryColor(vectorLayer.get('id'), false), 0.8]
                             }),
                             stroke: new ol.style.Stroke({
                                 color: generateQueryColor(vectorLayer.get('id'), false),
@@ -185,7 +187,7 @@ function processQueryResults(allFeatures, key, value) {
                 image: new ol.style.Circle({
                     radius: 6,
                     fill: new ol.style.Fill({
-                        color: [...generateQueryColor(vectorLayer.get('id'), false), 0.4]
+                        color: [...generateQueryColor(vectorLayer.get('id'), false), 0.8]
                     }),
                     stroke: new ol.style.Stroke({
                         color: generateQueryColor(vectorLayer.get('id'), false),
@@ -294,6 +296,8 @@ function processQueryResults(allFeatures, key, value) {
     // Add vector layer to map
     const tagQueriesGroup = findOrCreateTagOverlaysGroup();
     if (tagQueriesGroup) {
+        // Hug the terrain in 3D mode
+        if (typeof apply3DTerrainClamping === 'function') apply3DTerrainClamping(vectorLayer);
         tagQueriesGroup.getLayers().push(vectorLayer);
         // Ensure the group is actually added to the map
         if (window.map) {
@@ -577,6 +581,8 @@ function findOrCreateTagOverlaysGroup() {
         zIndex: 1000, // Ensure it's on top of other layers
         layers: []
     });
+    // Hug the terrain in 3D mode
+    if (typeof apply3DTerrainClamping === 'function') apply3DTerrainClamping(overlaysGroup);
 
     // Add to config.layers
     config.layers.push(overlaysGroup);
@@ -1176,7 +1182,7 @@ function createTagOverlay(key, value, query) {
                         image: new ol.style.Circle({
                             radius: 6,
                             fill: new ol.style.Fill({
-                                color: [...generateQueryColor(vectorLayer.get('id'), false), 0.4]
+                                color: [...generateQueryColor(vectorLayer.get('id'), false), 0.8]
                             }),
                             stroke: new ol.style.Stroke({
                                 color: [...generateQueryColor(vectorLayer.get('id'), false), 1.0],
@@ -1189,13 +1195,13 @@ function createTagOverlay(key, value, query) {
                 // Regular point styling (nodes)
                 return new ol.style.Style({
                     image: new ol.style.Circle({
-                        radius: 4,
+                        radius: 6,
                         fill: new ol.style.Fill({
-                            color: [...generateQueryColor(vectorLayer.get('id'), false), 0.6]
+                            color: [...generateQueryColor(vectorLayer.get('id'), false), 0.9]
                         }),
                         stroke: new ol.style.Stroke({
-                            color: [...generateQueryColor(vectorLayer.get('id'), false), 1.0],
-                            width: 1
+                            color: '#ffffff',
+                            width: 2
                         })
                     })
                 });
@@ -1258,7 +1264,7 @@ function createTagOverlay(key, value, query) {
                         image: new ol.style.Circle({
                             radius: 6,
                             fill: new ol.style.Fill({
-                                color: [...generateQueryColor(vectorLayer.get('id'), false), 0.4]
+                                color: [...generateQueryColor(vectorLayer.get('id'), false), 0.8]
                             }),
                             stroke: new ol.style.Stroke({
                                 color: generateQueryColor(vectorLayer.get('id'), false),
@@ -1278,7 +1284,7 @@ function createTagOverlay(key, value, query) {
                     image: new ol.style.Circle({
                         radius: 6,
                         fill: new ol.style.Fill({
-                            color: [...generateQueryColor(vectorLayer.get('id'), false), 0.4]
+                            color: [...generateQueryColor(vectorLayer.get('id'), false), 0.8]
                         }),
                         stroke: new ol.style.Stroke({
                             color: generateQueryColor(vectorLayer.get('id'), false),
@@ -1291,13 +1297,13 @@ function createTagOverlay(key, value, query) {
                 console.error('Error creating fallback point:', error);
                 return new ol.style.Style({
                     image: new ol.style.Circle({
-                        radius: 4,
+                        radius: 6,
                         fill: new ol.style.Fill({
-                            color: [...generateQueryColor(vectorLayer.get('id'), false), 0.6]
+                            color: [...generateQueryColor(vectorLayer.get('id'), false), 0.9]
                         }),
                         stroke: new ol.style.Stroke({
-                            color: generateQueryColor(vectorLayer.get('id'), false),
-                            width: 1
+                            color: '#ffffff',
+                            width: 2
                         })
                     })
                 });
@@ -1331,6 +1337,8 @@ function createTagOverlay(key, value, query) {
         }
 
         // Add the vector layer to the Tag Queries group
+        // Hug the terrain in 3D mode
+        if (typeof apply3DTerrainClamping === 'function') apply3DTerrainClamping(vectorLayer);
         tagQueriesGroup.getLayers().push(vectorLayer);
     }
 
@@ -2039,6 +2047,8 @@ function initValueSearch() {
             iconSrc: 'src/img/icones_web/tag_icon.png',
             iconStyle: 'filter: hue-rotate(120deg);',
             visible: true,
+            // Clamp to real terrain elevation in 3D mode (Mapterhorn DEM)
+            altitudeMode: 'clampToGround',
             style: function(feature) {
                 const geometry = feature.getGeometry();
                 const geometryType = geometry.getType();
@@ -2064,7 +2074,7 @@ function initValueSearch() {
                             image: new ol.style.Circle({
                                 radius: 6,
                                 fill: new ol.style.Fill({
-                                    color: [...generateQueryColor(vectorLayer.get('id'), false), 0.4]
+                                    color: [...generateQueryColor(vectorLayer.get('id'), false), 0.8]
                                 }),
                                 stroke: new ol.style.Stroke({
                                     color: generateQueryColor(vectorLayer.get('id'), false),
@@ -2075,13 +2085,13 @@ function initValueSearch() {
                     }
                     return new ol.style.Style({
                         image: new ol.style.Circle({
-                            radius: 4,
+                            radius: 6,
                             fill: new ol.style.Fill({
-                                color: [...generateQueryColor(vectorLayer.get('id'), false), 0.6]
+                                color: [...generateQueryColor(vectorLayer.get('id'), false), 0.9]
                             }),
                             stroke: new ol.style.Stroke({
-                                color: generateQueryColor(vectorLayer.get('id'), false),
-                                width: 1
+                                color: '#ffffff',
+                                width: 2
                             })
                         })
                     });
@@ -2133,7 +2143,7 @@ function initValueSearch() {
                             image: new ol.style.Circle({
                                 radius: 6,
                                 fill: new ol.style.Fill({
-                                    color: [...generateQueryColor(vectorLayer.get('id'), false), 0.4]
+                                    color: [...generateQueryColor(vectorLayer.get('id'), false), 0.8]
                                 }),
                                 stroke: new ol.style.Stroke({
                                     color: generateQueryColor(vectorLayer.get('id'), false),
@@ -2150,7 +2160,7 @@ function initValueSearch() {
                     image: new ol.style.Circle({
                         radius: 6,
                         fill: new ol.style.Fill({
-                            color: [...generateQueryColor(vectorLayer.get('id'), false), 0.4]
+                            color: [...generateQueryColor(vectorLayer.get('id'), false), 0.8]
                         }),
                         stroke: new ol.style.Stroke({
                             color: generateQueryColor(vectorLayer.get('id'), false),
@@ -2259,6 +2269,8 @@ function initValueSearch() {
         // Add vector layer to map
         const tagQueriesGroup = findOrCreateTagOverlaysGroup();
         if (tagQueriesGroup) {
+            // Hug the terrain in 3D mode
+            if (typeof apply3DTerrainClamping === 'function') apply3DTerrainClamping(vectorLayer);
             tagQueriesGroup.getLayers().push(vectorLayer);
             // Ensure the group is actually added to the map
             if (window.map) {

@@ -3928,7 +3928,7 @@ is_in:country,Indonesia,és_a:país Indonèsia
 cuisine,indonesian,cuina	=	indonesi
 location,indoor,ubicació	=	interior
 surveillance,indoor,vigilància interior
-leisure,indoor_play,temps lliure	=	joc d'interior
+leisure,indoor_play,"temps lliure=joc d'interior. Piscina de boles, tobogan interior"
 abutters,industrial,confina amb	=	industrial
 historic,industrial,històric	=	industrial
 landuse,industrial,"L'ús industrial del sòl designa zones per a la fabricació, producció, emmagatzematge i activitats industrials | ús del sòl	=	industrial"
@@ -4946,7 +4946,7 @@ self_service,no,autoservei = no  Activar sí/no
 dual_carriageway,no,autovia = no  Activar sí/no
 overtaking,no,avançament = no  Activar sí/no
 toilets,no,banys = no  Activar sí/no
-toilets:handwashing,no,banys: rentat de mans	=	no
+toilets:handwashing,,banys: rentat de mans	=	no
 barrier,no,barrera	=	no
 goods,no,béns	=	no
 bicycle,no,bicicleta	=	no
